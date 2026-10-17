@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hefteintrag: Wie funktioniert ein Elektromotor?</title>
+<meta name="robots" content="noindex, nofollow">
+<style>
+
+:root{--ink:#1d2b24;--muted:#5b6c63;--line:#cfe0d3;--bg:#f1f8f0;--paper:#fff;--gruen:#58b36f;--gruen-dk:#2c7a46;--gruen-hell:#e0f3e3;--orange:#f0a30a;--blau:#2447a8}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Verdana,Arial,Helvetica,sans-serif;line-height:1.55;font-size:17px;-webkit-text-size-adjust:100%}
+button{font:inherit;color:inherit;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+
+.sheet{max-width:860px;margin:0 auto;padding:18px 18px 60px}
+.kopf{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;border-bottom:3px solid var(--ink);padding-bottom:8px;margin-bottom:12px}
+.kopf .fach{font-size:13px;font-weight:bold;letter-spacing:.08em;text-transform:uppercase;color:var(--gruen-dk)}
+h1{font-size:27px;line-height:1.15;margin:2px 0 0}
+.namen{font-size:14px;color:var(--muted);white-space:nowrap}
+.namen span{display:inline-block;border-bottom:1.5px solid var(--ink);width:150px;margin-left:6px}
+.toolbar{position:sticky;top:0;z-index:10;background:linear-gradient(var(--bg) 80%,rgba(241,248,240,0));padding:8px 0 14px;display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.tbtn{min-height:50px;border-radius:14px;border:2px solid var(--gruen-dk);background:var(--gruen);color:#fff;font-weight:bold;font-size:16px;padding:8px 18px}
+.tbtn.alt{background:#fff;color:var(--gruen-dk)}
+#ergebnis{font-weight:bold;font-size:16px}
+details.hilfe{font-size:14px;color:var(--muted);margin:0 0 10px}
+details.hilfe summary{cursor:pointer;min-height:32px}
+.aufgabe{background:var(--paper);border:2px solid var(--ink);border-radius:16px;padding:14px 18px 16px;margin:0 0 16px}
+#a1,#a3{break-inside:avoid;page-break-inside:avoid}
+.zeile,.bank{break-inside:avoid;page-break-inside:avoid}
+.aufgabe h2{font-size:18px;margin:0 0 4px}
+.aufgabe h2 b{display:inline-block;background:var(--ink);color:#fff;border-radius:8px;padding:0 9px;margin-right:8px}
+.aufgabe .hinw{margin:0 0 10px;color:var(--muted);font-size:14px}
+.bank{display:flex;flex-wrap:wrap;gap:8px;align-items:center;background:#f3faf4;border:2px dashed var(--gruen);border-radius:12px;padding:8px 10px;margin:8px 0 12px}
+.bank > i{font-style:normal;font-size:12px;font-weight:bold;letter-spacing:.06em;text-transform:uppercase;color:var(--gruen-dk);margin-right:4px}
+.wort{min-height:44px;padding:6px 14px;border-radius:999px;border:2px solid var(--ink);background:#fff;font-weight:bold;font-size:16px}
+.wort.sel{background:var(--orange);border-color:#9a6a05}
+.wort.used{opacity:.28;pointer-events:none}
+.luecke{display:inline-block;min-width:118px;min-height:34px;padding:0 8px;margin:0 2px;vertical-align:baseline;border:0;border-bottom:2.5px solid var(--ink);background:#f6faf6;color:var(--blau);font:inherit;font-weight:bold;text-align:center;border-radius:6px 6px 0 0}
+.luecke.aktiv{background:#fff1cc;border-bottom-color:#9a6a05}
+.luecke.ok{background:#d9f2df;border-bottom-color:#1e9e4d}
+.luecke.bad{background:#fbdcd8;border-bottom-color:#d83a3a}
+.zeile{display:grid;grid-template-columns:minmax(0,230px) 1fr;gap:16px;align-items:center;padding:8px 0;border-top:1.5px solid var(--line)}
+.zeile:first-of-type{border-top:0}
+.zeile svg{width:100%;height:auto;display:block;border:1.5px solid var(--line);border-radius:10px;background:#fbfefb}
+.zeile p{margin:0;font-size:17px;line-height:2.2}
+.zeile .nr{font-weight:bold;color:var(--gruen-dk)}
+.beschr{display:grid;grid-template-columns:minmax(0,300px) 1fr;gap:18px;align-items:center}
+.beschr svg{width:100%;height:auto;display:block;border:1.5px solid var(--line);border-radius:10px;background:#fbfefb}
+.liste{list-style:none;margin:0;padding:0;display:grid;gap:12px}
+.liste li{display:flex;align-items:baseline;gap:10px;font-size:17px}
+.liste b.z{display:inline-grid;place-items:center;width:30px;height:30px;border:2.5px solid var(--ink);border-radius:50%;font-size:16px;flex:none}
+.merk{border:3px solid var(--ink);border-radius:14px;padding:12px 16px;background:#f6fbf6;margin:8px 0}
+.merk p{margin:0;line-height:2.2}
+.formel{font-size:22px;font-weight:bold;text-align:center;margin:10px 0 2px;color:var(--gruen-dk)}
+.linien{margin-top:10px}
+.linien div{height:10mm;border-bottom:1.5px solid #9db5a3}
+.sol .linien div{border-bottom-color:#dfe9e1}
+body.sol .luecke{color:var(--blau)}
+body.sol .luecke::before{content:attr(data-ans)}
+body.sol .toolbar, body.sol .bank, body.sol details.hilfe{display:none}
+@page{size:A4;margin:11mm 13mm}
+@media print{
+  body{background:#fff;font-size:11.5pt;line-height:1.4}
+  .sheet{max-width:none;padding:0}
+  .toolbar, details.hilfe{display:none !important}
+  .aufgabe{border-width:1.5px;margin:0 0 4mm;padding:3mm 4mm 3.5mm}
+  .zeile p, .merk p{line-height:2.1}
+  .luecke{background:none !important;border-bottom-color:#1d2b24 !important}
+  .wort{min-height:0;padding:1px 10px;font-size:11pt}
+  .bank{margin:2mm 0 3mm;padding:2mm 3mm}
+  h1{font-size:20pt}
+  .zeile svg{border:0}
+  .beschr svg{border:0}
+  .zeile{grid-template-columns:46mm 1fr;gap:5mm;padding:1.5mm 0}
+  .beschr{grid-template-columns:62mm 1fr;gap:6mm}
+  .aufgabe{-webkit-box-decoration-break:clone;box-decoration-break:clone}
+  .zeile p{font-size:11pt}
+  .noprint{display:none}
+}
+@media (max-width:640px){
+  .zeile, .beschr{grid-template-columns:1fr}
+  .zeile svg, .beschr svg{max-width:340px}
+  .kopf{flex-direction:column;align-items:flex-start}
+}
+</style>
+</head>
+<body>
+<div class="sheet">
+  <header class="kopf">
+    <div><div class="fach">NuT &middot; Klasse 7 &middot; Hefteintrag</div><h1>Wie funktioniert ein Elektromotor?</h1></div>
+    <div class="namen">Name<span></span><br>Datum<span></span></div>
+  </header>
+
+  <div class="toolbar" id="toolbar">
+    <button class="tbtn" id="pruefen">Prüfen</button>
+    <button class="tbtn alt" id="leeren">Alles löschen</button>
+    <button class="tbtn alt" id="pdf">Als PDF sichern</button>
+    <span id="ergebnis" aria-live="polite"></span>
+  </div>
+  <details class="hilfe"><summary>So füllst du aus und sicherst das PDF</summary>
+    <p>Tippe ein Wort im Wortspeicher an, es leuchtet orange. Dann tippe auf die Lücke, in die es gehört. Tippst du eine ausgefüllte Lücke an, wird sie wieder leer. Mit "Prüfen" siehst du, was stimmt (grün) und was nicht (rot).</p>
+    <p>PDF auf dem iPad: "Als PDF sichern" antippen, in der Druckvorschau mit zwei Fingern auf die Seite aufziehen, dann auf Teilen tippen und "In Dateien sichern" wählen. In OneNote: Einfügen, Datei, Ausdruck einfügen.</p>
+  </details>
+
+  <section class="aufgabe" id="a1">
+    <h2><b>1</b>Bauteile benennen</h2>
+    <p class="hinw">Der Kommutator heißt auch Polwender. Tippe erst das Wort an, dann die Lücke.</p>
+    <div class="beschr">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="92 30 456 470" role="img" aria-label="Gleichstrommotor">
+<defs><marker id="pfb" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="15" markerHeight="15" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0 L10 5 L0 10 Z" fill="#e07b00"/></marker></defs>
+<path d="M40 80 H238 V175 A118 118 0 0 0 238 345 V440 H40 Z" fill="#fbd5d1" stroke="#b9413a" stroke-width="3" stroke-linejoin="round"/>
+<path d="M600 80 H402 V175 A118 118 0 0 1 402 345 V440 H600 Z" fill="#c9eed4" stroke="#2c8a52" stroke-width="3" stroke-linejoin="round"/>
+<text x="130" y="284" font-size="84" font-weight="800" text-anchor="middle" fill="#b9413a" opacity=".85">N</text>
+<text x="510" y="284" font-size="84" font-weight="800" text-anchor="middle" fill="#2c8a52" opacity=".85">S</text>
+<path d="M320 52 V222" stroke="#e8b4b0" stroke-width="7" fill="none" stroke-linecap="round"/>
+<path d="M320 298 V470" stroke="#b7c6ee" stroke-width="7" fill="none" stroke-linecap="round"/>
+<circle cx="320" cy="48" r="12" fill="#d83a3a"/><text x="320" y="54" font-size="18" font-weight="800" fill="#fff" text-anchor="middle">+</text>
+<circle cx="320" cy="474" r="12" fill="#2f5fd0"/><text x="320" y="480" font-size="18" font-weight="800" fill="#fff" text-anchor="middle">&#8722;</text>
+<g transform="translate(320 260) rotate(35)">
+<rect x="-92" y="-12" width="184" height="24" rx="6" fill="#8c9791"/><rect x="24" y="-25" width="38" height="50" rx="6" fill="#efd2a4"/><line x1="30" y1="-26" x2="30" y2="26" stroke="#b8762a" stroke-width="4" stroke-linecap="round"/><line x1="37" y1="-26" x2="37" y2="26" stroke="#b8762a" stroke-width="4" stroke-linecap="round"/><line x1="44" y1="-26" x2="44" y2="26" stroke="#b8762a" stroke-width="4" stroke-linecap="round"/><line x1="51" y1="-26" x2="51" y2="26" stroke="#b8762a" stroke-width="4" stroke-linecap="round"/><line x1="58" y1="-26" x2="58" y2="26" stroke="#b8762a" stroke-width="4" stroke-linecap="round"/><rect x="-62" y="-25" width="38" height="50" rx="6" fill="#efd2a4"/><line x1="-30" y1="-26" x2="-30" y2="26" stroke="#b8762a" stroke-width="4" stroke-linecap="round"/><line x1="-37" y1="-26" x2="-37" y2="26" stroke="#b8762a" stroke-width="4" stroke-linecap="round"/><line x1="-44" y1="-26" x2="-44" y2="26" stroke="#b8762a" stroke-width="4" stroke-linecap="round"/><line x1="-51" y1="-26" x2="-51" y2="26" stroke="#b8762a" stroke-width="4" stroke-linecap="round"/><line x1="-58" y1="-26" x2="-58" y2="26" stroke="#b8762a" stroke-width="4" stroke-linecap="round"/>
+<rect x="88" y="-34" width="16" height="68" rx="6" fill="#c4cdc8" stroke="#3a4a42" stroke-width="2.5"/>
+<rect x="-104" y="-34" width="16" height="68" rx="6" fill="#c4cdc8" stroke="#3a4a42" stroke-width="2.5"/>
+<path d="M2 -27 A27 27 0 0 1 2 27 L2 14 A14 14 0 0 0 2 -14 Z" fill="#f0a30a" stroke="#9a6a05" stroke-width="2"/>
+<path d="M-2 -27 A27 27 0 0 0 -2 27 L-2 14 A14 14 0 0 1 -2 -14 Z" fill="#f0a30a" stroke="#9a6a05" stroke-width="2"/>
+<circle r="8" fill="#2f3d36"/></g>
+<rect x="305" y="220" width="30" height="14" rx="3" fill="#d83a3a" stroke="#7d1f1f" stroke-width="2"/>
+<rect x="305" y="286" width="30" height="14" rx="3" fill="#2f5fd0" stroke="#17306f" stroke-width="2"/>
+<g transform="translate(130 150)"><circle r="20" fill="#fff" stroke="#1d2b24" stroke-width="3.5"/><text y="9" font-size="25" font-weight="800" text-anchor="middle" fill="#1d2b24">1</text></g><line x1="262" y1="116" x2="258" y2="214" stroke="#1d2b24" stroke-width="3" stroke-linecap="round"/><circle cx="258" cy="214" r="5" fill="#1d2b24"/><g transform="translate(262 116)"><circle r="20" fill="#fff" stroke="#1d2b24" stroke-width="3.5"/><text y="9" font-size="25" font-weight="800" text-anchor="middle" fill="#1d2b24">2</text></g><line x1="380" y1="126" x2="334" y2="224" stroke="#1d2b24" stroke-width="3" stroke-linecap="round"/><circle cx="334" cy="224" r="5" fill="#1d2b24"/><g transform="translate(380 126)"><circle r="20" fill="#fff" stroke="#1d2b24" stroke-width="3.5"/><text y="9" font-size="25" font-weight="800" text-anchor="middle" fill="#1d2b24">4</text></g><line x1="262" y1="398" x2="304" y2="282" stroke="#1d2b24" stroke-width="3" stroke-linecap="round"/><circle cx="304" cy="282" r="5" fill="#1d2b24"/><g transform="translate(262 398)"><circle r="20" fill="#fff" stroke="#1d2b24" stroke-width="3.5"/><text y="9" font-size="25" font-weight="800" text-anchor="middle" fill="#1d2b24">3</text></g>
+</svg>
+      <ul class="liste">
+        <li><b class="z">1</b><button class="luecke" data-ans="Stator" aria-label="Bauteil 1"></button></li>
+        <li><b class="z">2</b><button class="luecke" data-ans="Rotor" aria-label="Bauteil 2"></button></li>
+        <li><b class="z">3</b><button class="luecke" data-ans="Kommutator" aria-label="Bauteil 3"></button></li>
+        <li><b class="z">4</b><button class="luecke" data-ans="Kohlebürste" aria-label="Bauteil 4"></button></li>
+      </ul>
+    </div>
+    <div class="bank" data-bank="1"><i>Wortspeicher</i><button class="wort" type="button">Rotor</button><button class="wort" type="button">Kohlebürste</button><button class="wort" type="button">Stator</button><button class="wort" type="button">Kommutator</button></div>
+  </section>
+
+  <section class="aufgabe" id="a2">
+    <h2><b>2</b>So läuft der Motor</h2>
+    <p class="hinw">Die Bilder zeigen drei Zustände während der Drehung. Die orangen Pfeile zeigen die Drehrichtung.</p>
+    <div class="bank" data-bank="2"><i>Wortspeicher</i><button class="wort" type="button">Stromrichtung</button><button class="wort" type="button">mechanische</button><button class="wort" type="button">Pole</button><button class="wort" type="button">dreht</button><button class="wort" type="button">Elektromagnet</button><button class="wort" type="button">weiter</button><button class="wort" type="button">Polwender</button><button class="wort" type="button">elektrische</button><button class="wort" type="button">stoßen</button><button class="wort" type="button">Stromkreis</button></div>
+    <div class="zeile">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="92 30 456 470" role="img" aria-label="Gleichstrommotor">
+<defs><marker id="pfz1" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="15" markerHeight="15" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0 L10 5 L0 10 Z" fill="#e07b00"/></marker></defs>
+<path d="M40 80 H238 V175 A118 118 0 0 0 238 345 V440 H40 Z" fill="#fbd5d1" stroke="#b9413a" stroke-width="3" stroke-linejoin="round"/>
+<path d="M600 80 H402 V175 A118 118 0 0 1 402 345 V440 H600 Z" fill="#c9eed4" stroke="#2c8a52" stroke-width="3" stroke-linejoin="round"/>
+<text x="130" y="284" font-size="84" font-weight="800" text-anchor="middle" fill="#b9413a" opacity=".85">N</text>
+<text x="510" y="284" font-size="84" font-weight="800" text-anchor="middle" fill="#2c8a52" opacity=".85">S</text>
+<path d="M320 52 V222" stroke="#e8b4b0" stroke-width="7" fill="none" stroke-linecap="round"/>
+<path d="M320 298 V470" stroke="#b7c6ee" stroke-width="7" fill="none" stroke-linecap="round"/>
+<circle cx="320" cy="48" r="12" fill="#d83a3a"/><text x="320" y="54" font-size="18" font-weight="800" fill="#fff" text-anchor="middle">+</text>
+<circle cx="320" cy="474" r="12" fill="#2f5fd0"/><text x="320" y="480" font-size="18" font-weight="800" fill="#fff" text-anchor="middle">&#8722;</text>
+<g transform="translate(320 260) rotate(35)">
+<rect x="-92" y="-12" width="184" height="24" rx="6" fill="#8c9791"/><rect x="24" y="-25" width="38" height="50" rx="6" fill="#efd2a4"/><line x1="30" y1="-26" x2="30" y2="26" stroke="#b8762a" stroke-width="4" stroke-linecap="round"/><line x1="37" y1="-26" x2="37" y2="26" stroke="#b8762a" stroke-width="4" stroke-linecap="round"/><line x1="44" y1="-26" x2="44" y2="26" stroke="#b8762a" stroke-width="4" stroke-linecap="round"/><line x1="51" y1="-26" x2="51" y2="26" stroke="#b8762a" stroke-width="4" stroke-linecap="round"/><line x1="58" y1="-26" x2="58" y2="26" stroke="#b8762a" stroke-width="4" stroke-linecap="round"/><rect x="-62" y="-25" width="38" height="50" rx="6" fill="#efd2a4"/><line x1="-30" y1="-26" x2="-30" y2="26" stroke="#b8762a" stroke-width="4" stroke-linecap="round"/><line x1="-37" y1="-26" x2="-37" y2="26" stroke="#b8762a" stroke-width="4" stroke-linecap="round"/><line x1="-44" y1="-26" x2="-44" y2="26" stroke="#b8762a" stroke-width="4" stroke-linecap="round"/><line x1="-51" y1="-26" x2="-51" y2="26" stroke="#b8762a" stroke-width="4" stroke-linecap="round"/><line x1="-58" y1="-26" x2="-58" y2="26" stroke="#b8762a" stroke-width="4" stroke-linecap="round"/>
+<rect x="88" y="-34" width="16" height="68" rx="6" fill="#e4574f" stroke="#3a4a42" stroke-width="2.5"/>
+<rect x="-104" y="-34" width="16" height="68" rx="6" fill="#4fb872" stroke="#3a4a42" stroke-width="2.5"/>
+<path d="M2 -27 A27 27 0 0 1 2 27 L2 14 A14 14 0 0 0 2 -14 Z" fill="#f0a30a" stroke="#9a6a05" stroke-width="2"/>
+<path d="M-2 -27 A27 27 0 0 0 -2 27 L-2 14 A14 14 0 0 1 -2 -14 Z" fill="#f0a30a" stroke="#9a6a05" stroke-width="2"/>
+<circle r="8" fill="#2f3d36"/></g>
+<rect x="305" y="220" width="30" height="14" rx="3" fill="#d83a3a" stroke="#7d1f1f" stroke-width="2"/>
+<rect x="305" y="286" width="30" height="14" rx="3" fill="#2f5fd0" stroke="#17306f" stroke-width="2"/>
+<path d="M426.9 309.9 A118 118 0 0 0 438.0 262.1" fill="none" stroke="#e07b00" stroke-width="6" stroke-linecap="round" marker-end="url(#pfz1)"/><path d="M213.1 210.1 A118 118 0 0 0 202.0 257.9" fill="none" stroke="#e07b00" stroke-width="6" stroke-linecap="round" marker-end="url(#pfz1)"/><g transform="translate(383.9 304.7)"><circle r="16" fill="#e4574f" stroke="#3a4a42" stroke-width="3"/><text y="7" font-size="21" font-weight="800" text-anchor="middle" fill="#fff">N</text></g><g transform="translate(256.1 215.3)"><circle r="16" fill="#4fb872" stroke="#3a4a42" stroke-width="3"/><text y="7" font-size="21" font-weight="800" text-anchor="middle" fill="#fff">S</text></g>
+</svg>
+      <p><span class="nr">1.</span> Der Strom fließt durch die Spule. Sie wird zu einem <button class="luecke" data-ans="Elektromagnet" aria-label="Lücke 1"></button>. Ungleichnamige <button class="luecke" data-ans="Pole" aria-label="Lücke 2"></button> ziehen sich an, deshalb dreht sich der Rotor.</p>
+    </div>
+    <div class="zeile">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="92 30 456 470" role="img" aria-label="Gleichstrommotor">
+<defs><marker id="pfz2" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="15" markerHeight="15" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0 L10 5 L0 10 Z" fill="#e07b00"/></marker></defs>
+<path d="M40 80 H238 V175 A118 118 0 0 0 238 345 V440 H40 Z" fill="#fbd5d1" stroke="#b9413a" stroke-width="3" stroke-linejoin="round"/>
+<path d="M600 80 H402 V175 A118 118 0 0 1 402 345 V440 H600 Z" fill="#c9eed4" stroke="#2c8a52" stroke-width="3" stroke-linejoin="round"/>
+<text x="130" y="284" font-size="84" font-weight="800" text-anchor="middle" fill="#b9413a" opacity=".85">N</text>
+<text x="510" y="284" font-size="84" font-weight="800" text-anchor="middle" fill="#2c8a52" opacity=".85">S</text>
+<path d="M320 52 V222" stroke="#e8b4b0" stroke-width="7" fill="none" stroke-linecap="round"/>
+<path d="M320 298 V470" stroke="#b7c6ee" stroke-width="7" fill="none" stroke-linecap="round"/>
+<circle cx="320" cy="48" r="12" fill="#d83a3a"/><text x="320" y="54" font-size="18" font-weight="800" fill="#fff" text-anchor="middle">+</text>
+<circle cx="320" cy="474" r="12" fill="#2f5fd0"/><text x="320" y="480" font-size="18" font-weight="800" fill="#fff" text-anchor="middle">&#8722;</text>
+<g transform="translate(320 260) rotate(0)">
+<rect x="-92" y="-12" width="184" height="24" rx="6" fill="#8c9791"/><rect x="24" y="-25" width="38" height="50" rx="6" fill="#efd2a4"/><line x1="30" y1="-26" x2="30" y2="26" stroke="#b8762a" stroke-width="4" stroke-linecap="round"/><line x1="37" y1="-26" x2="37" y2="26" stroke="#b8762a" stroke-width="4" stroke-linecap="round"/><line x1="44" y1="-26" x2="44" y2="26" stroke="#b8762a" stroke-width="4" stroke-linecap="round"/><line x1="51" y1="-26" x2="51" y2="26" stroke="#b8762a" stroke-width="4" stroke-linecap="round"/><line x1="58" y1="-26" x2="58" y2="26" stroke="#b8762a" stroke-width="4" stroke-linecap="round"/><rect x="-62" y="-25" width="38" height="50" rx="6" fill="#efd2a4"/><line x1="-30" y1="-26" x2="-30" y2="26" stroke="#b8762a" stroke-width="4" stroke-linecap="round"/><line x1="-37" y1="-26" x2="-37" y2="26" stroke="#b8762a" stroke-width="4" stroke-linecap="round"/><line x1="-44" y1="-26" x2="-44" y2="26" stroke="#b8762a" stroke-width="4" stroke-linecap="round"/><line x1="-51" y1="-26" x2="-51" y2="26" stroke="#b8762a" stroke-width="4" stroke-linecap="round"/><line x1="-58" y1="-26" x2="-58" y2="26" stroke="#b8762a" stroke-width="4" stroke-linecap="round"/>
+<rect x="88" y="-34" width="16" height="68" rx="6" fill="#c4cdc8" stroke="#3a4a42" stroke-width="2.5"/>
+<rect x="-104" y="-34" width="16" height="68" rx="6" fill="#c4cdc8" stroke="#3a4a42" stroke-width="2.5"/>
+<path d="M2 -27 A27 27 0 0 1 2 27 L2 14 A14 14 0 0 0 2 -14 Z" fill="#f0a30a" stroke="#9a6a05" stroke-width="2"/>
+<path d="M-2 -27 A27 27 0 0 0 -2 27 L-2 14 A14 14 0 0 1 -2 -14 Z" fill="#f0a30a" stroke="#9a6a05" stroke-width="2"/>
+<circle r="8" fill="#2f3d36"/></g>
+<rect x="305" y="220" width="30" height="14" rx="3" fill="#d83a3a" stroke="#7d1f1f" stroke-width="2"/>
+<rect x="305" y="286" width="30" height="14" rx="3" fill="#2f5fd0" stroke="#17306f" stroke-width="2"/>
+<path d="M436.2 239.5 A118 118 0 0 0 417.8 194.0" fill="none" stroke="#e07b00" stroke-width="6" stroke-linecap="round" stroke-dasharray="7 6" marker-end="url(#pfz2)"/><path d="M203.8 280.5 A118 118 0 0 0 222.2 326.0" fill="none" stroke="#e07b00" stroke-width="6" stroke-linecap="round" stroke-dasharray="7 6" marker-end="url(#pfz2)"/>
+</svg>
+      <p><span class="nr">2.</span> Die Bürsten liegen auf der Lücke. Der <button class="luecke" data-ans="Stromkreis" aria-label="Lücke 3"></button> ist unterbrochen (Totlage). Der Rotor <button class="luecke" data-ans="dreht" aria-label="Lücke 4"></button> sich aber noch weiter, weil er genug Schwung hat.</p>
+    </div>
+    <div class="zeile">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="92 30 456 470" role="img" aria-label="Gleichstrommotor">
+<defs><marker id="pfz3" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="15" markerHeight="15" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0 L10 5 L0 10 Z" fill="#e07b00"/></marker></defs>
+<path d="M40 80 H238 V175 A118 118 0 0 0 238 345 V440 H40 Z" fill="#fbd5d1" stroke="#b9413a" stroke-width="3" stroke-linejoin="round"/>
+<path d="M600 80 H402 V175 A118 118 0 0 1 402 345 V440 H600 Z" fill="#c9eed4" stroke="#2c8a52" stroke-width="3" stroke-linejoin="round"/>
+<text x="130" y="284" font-size="84" font-weight="800" text-anchor="middle" fill="#b9413a" opacity=".85">N</text>
+<text x="510" y="284" font-size="84" font-weight="800" text-anchor="middle" fill="#2c8a52" opacity=".85">S</text>
+<path d="M320 52 V222" stroke="#e8b4b0" stroke-width="7" fill="none" stroke-linecap="round"/>
+<path d="M320 298 V470" stroke="#b7c6ee" stroke-width="7" fill="none" stroke-linecap="round"/>
+<circle cx="320" cy="48" r="12" fill="#d83a3a"/><text x="320" y="54" font-size="18" font-weight="800" fill="#fff" text-anchor="middle">+</text>
+<circle cx="320" cy="474" r="12" fill="#2f5fd0"/><text x="320" y="480" font-size="18" font-weight="800" fill="#fff" text-anchor="middle">&#8722;</text>
+<g transform="translate(320 260) rotate(-35)">
+<rect x="-92" y="-12" width="184" height="24" rx="6" fill="#8c9791"/><rect x="24" y="-25" width="38" height="50" rx="6" fill="#efd2a4"/><line x1="30" y1="-26" x2="30" y2="26" stroke="#b8762a" stroke-width="4" stroke-linecap="round"/><line x1="37" y1="-26" x2="37" y2="26" stroke="#b8762a" stroke-width="4" stroke-linecap="round"/><line x1="44" y1="-26" x2="44" y2="26" stroke="#b8762a" stroke-width="4" stroke-linecap="round"/><line x1="51" y1="-26" x2="51" y2="26" stroke="#b8762a" stroke-width="4" stroke-linecap="round"/><line x1="58" y1="-26" x2="58" y2="26" stroke="#b8762a" stroke-width="4" stroke-linecap="round"/><rect x="-62" y="-25" width="38" height="50" rx="6" fill="#efd2a4"/><line x1="-30" y1="-26" x2="-30" y2="26" stroke="#b8762a" stroke-width="4" stroke-linecap="round"/><line x1="-37" y1="-26" x2="-37" y2="26" stroke="#b8762a" stroke-width="4" stroke-linecap="round"/><line x1="-44" y1="-26" x2="-44" y2="26" stroke="#b8762a" stroke-width="4" stroke-linecap="round"/><line x1="-51" y1="-26" x2="-51" y2="26" stroke="#b8762a" stroke-width="4" stroke-linecap="round"/><line x1="-58" y1="-26" x2="-58" y2="26" stroke="#b8762a" stroke-width="4" stroke-linecap="round"/>
+<rect x="88" y="-34" width="16" height="68" rx="6" fill="#4fb872" stroke="#3a4a42" stroke-width="2.5"/>
+<rect x="-104" y="-34" width="16" height="68" rx="6" fill="#e4574f" stroke="#3a4a42" stroke-width="2.5"/>
+<path d="M2 -27 A27 27 0 0 1 2 27 L2 14 A14 14 0 0 0 2 -14 Z" fill="#f0a30a" stroke="#9a6a05" stroke-width="2"/>
+<path d="M-2 -27 A27 27 0 0 0 -2 27 L-2 14 A14 14 0 0 1 -2 -14 Z" fill="#f0a30a" stroke="#9a6a05" stroke-width="2"/>
+<circle r="8" fill="#2f3d36"/></g>
+<rect x="305" y="220" width="30" height="14" rx="3" fill="#d83a3a" stroke="#7d1f1f" stroke-width="2"/>
+<rect x="305" y="286" width="30" height="14" rx="3" fill="#2f5fd0" stroke="#17306f" stroke-width="2"/>
+<path d="M403.4 176.6 A118 118 0 0 0 362.3 149.8" fill="none" stroke="#e07b00" stroke-width="6" stroke-linecap="round" marker-end="url(#pfz3)"/><path d="M236.6 343.4 A118 118 0 0 0 277.7 370.2" fill="none" stroke="#e07b00" stroke-width="6" stroke-linecap="round" marker-end="url(#pfz3)"/><g transform="translate(383.9 215.3)"><circle r="16" fill="#4fb872" stroke="#3a4a42" stroke-width="3"/><text y="7" font-size="21" font-weight="800" text-anchor="middle" fill="#fff">S</text></g><g transform="translate(256.1 304.7)"><circle r="16" fill="#e4574f" stroke="#3a4a42" stroke-width="3"/><text y="7" font-size="21" font-weight="800" text-anchor="middle" fill="#fff">N</text></g>
+</svg>
+      <p><span class="nr">3.</span> Der <button class="luecke" data-ans="Polwender" aria-label="Lücke 5"></button> ändert die <button class="luecke" data-ans="Stromrichtung" aria-label="Lücke 6"></button> in der Spule. Die Pole des Rotors vertauschen sich. Gleiche Pole <button class="luecke" data-ans="stoßen" aria-label="Lücke 7"></button> sich ab, die Drehung geht <button class="luecke" data-ans="weiter" aria-label="Lücke 8"></button>.</p>
+    </div>
+  </section>
+
+  <section class="aufgabe" id="a3">
+    <h2><b>3</b>Das merke ich mir</h2>
+    <div class="merk"><p>Ein Elektromotor wandelt <button class="luecke" data-ans="elektrische" aria-label="Lücke 9"></button> Energie in <button class="luecke" data-ans="mechanische" aria-label="Lücke 10"></button> Energie um.</p></div>
+    <div class="formel">Strom + Magnet = Drehung</div>
+    <p class="hinw" style="margin-top:10px">Erkläre in eigenen Worten, wie Turhans Roller fährt (2 bis 3 Sätze). Du kannst mit dem Apple Pencil schreiben.</p>
+    <div class="linien"><div></div><div></div><div></div><div></div></div>
+  </section>
+</div>
+
+<script>
+(function () {
+  var bad = 'bad', ok = 'ok';
+  var luecken = Array.prototype.slice.call(document.querySelectorAll('.luecke'));
+  var sel = null, aktiv = null;
+  function chipsFuer(l) { var b = l.closest('.aufgabe').querySelector('.bank'); return b; }
+  function alleChips() { return Array.prototype.slice.call(document.querySelectorAll('.wort')); }
+  function bankFuer(l) {
+    var s = l.closest('.aufgabe');
+    if (s.id === 'a1') { return document.querySelector('[data-bank="1"]'); }
+    return document.querySelector('[data-bank="2"]');
+  }
+  function freigeben(l) {
+    if (l._chip) { l._chip.classList.remove('used'); l._chip = null; }
+    l.textContent = ''; l.classList.remove(ok, bad);
+  }
+  function fuellen(l, chip) {
+    freigeben(l);
+    chip.classList.add('used'); chip.classList.remove('sel');
+    l._chip = chip; l.textContent = chip.textContent;
+    sel = null; if (aktiv) { aktiv.classList.remove('aktiv'); aktiv = null; }
+    ergebnis('');
+  }
+  function ergebnis(t) { document.getElementById('ergebnis').textContent = t; }
+  alleChips().forEach(function (c) {
+    c.addEventListener('click', function () {
+      if (aktiv) { var l = aktiv; if (bankFuer(l) === c.parentNode) { fuellen(l, c); } return; }
+      if (sel) { sel.classList.remove('sel'); }
+      sel = (sel === c) ? null : c; if (sel) { sel.classList.add('sel'); }
+    });
+  });
+  luecken.forEach(function (l) {
+    l.addEventListener('click', function () {
+      if (sel && bankFuer(l) === sel.parentNode) { fuellen(l, sel); return; }
+      if (l.textContent) { freigeben(l); ergebnis(''); return; }
+      if (aktiv) { aktiv.classList.remove('aktiv'); }
+      aktiv = (aktiv === l) ? null : l; if (aktiv) { aktiv.classList.add('aktiv'); }
+    });
+  });
+  document.getElementById('pruefen').addEventListener('click', function () {
+    var richtig = 0, leer = 0;
+    luecken.forEach(function (l) {
+      l.classList.remove(ok, bad);
+      if (!l.textContent) { leer++; return; }
+      if (l.textContent.toLowerCase() === l.getAttribute('data-ans').toLowerCase()) { l.classList.add(ok); richtig++; } else { l.classList.add(bad); }
+    });
+    ergebnis(richtig + ' von ' + luecken.length + ' richtig' + (leer ? ', ' + leer + ' noch leer' : ''));
+  });
+  document.getElementById('leeren').addEventListener('click', function () {
+    luecken.forEach(freigeben); if (sel) { sel.classList.remove('sel'); sel = null; }
+    if (aktiv) { aktiv.classList.remove('aktiv'); aktiv = null; } ergebnis('');
+  });
+  document.getElementById('pdf').addEventListener('click', function () { window.print(); });
+})();
+</script>
+</body>
+</html>

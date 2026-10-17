@@ -1,0 +1,597 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Motor-Labor</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2358b36f'/%3E%3Ccircle cx='32' cy='32' r='14' fill='%23fff'/%3E%3Crect x='10' y='28' width='44' height='8' rx='4' fill='%232c7a46'/%3E%3C/svg%3E">
+<style>
+:root{
+  --bg:#f1f8f0; --card:#ffffff; --ink:#1d2b24; --muted:#5b6c63; --line:#d2e4d5;
+  --gruen:#58b36f; --gruen-dk:#2c7a46; --gruen-hell:#e0f3e3;
+  --n:#e4574f; --s:#4fb872; --off:#b9c4bd; --orange:#f0a30a; --plus:#d83a3a; --minus:#2f5fd0;
+}
+@media (prefers-color-scheme: dark){
+  :root[data-theme="auto"]{}
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Rounded","Segoe UI",system-ui,sans-serif;background:var(--bg);color:var(--ink);-webkit-text-size-adjust:100%}
+.wrap{max-width:1200px;margin:0 auto;padding:12px 16px 32px;padding-left:max(16px,env(safe-area-inset-left));padding-right:max(16px,env(safe-area-inset-right))}
+header{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin:4px 0 12px}
+h1{font-size:24px;margin:0}
+header p{margin:0;color:var(--muted);font-size:16px}
+.grid{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(300px,1fr);gap:16px;align-items:start}
+@media (max-width:860px){.grid{grid-template-columns:1fr}}
+.card{background:var(--card);border:2px solid var(--line);border-radius:22px}
+.stage{overflow:hidden;position:relative}
+#stage{display:block;width:100%;height:auto;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+.status{padding:12px 16px;border-top:2px solid var(--line);font-size:17px;min-height:56px;display:flex;align-items:center;gap:10px;background:#fafdf9}
+.status b{font-weight:700}
+.dot{width:14px;height:14px;border-radius:50%;background:var(--off);flex:none}
+.dot.ok{background:var(--gruen)} .dot.warn{background:var(--orange)} .dot.bad{background:var(--n)}
+.panel{padding:16px;display:grid;gap:14px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+button{font:inherit;color:inherit;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.tog{min-height:56px;border-radius:16px;border:2px solid var(--line);background:#fff;padding:8px 12px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:16px;font-weight:600}
+.tog small{font-weight:500;color:var(--muted);font-size:14px}
+.tog[aria-pressed="true"]{background:var(--gruen-hell);border-color:var(--gruen)}
+.tog[aria-pressed="true"] small{color:var(--gruen-dk);font-weight:700}
+.btn{min-height:52px;border-radius:16px;border:2px solid var(--gruen-dk);background:var(--gruen);color:#fff;font-weight:700;font-size:17px;padding:8px 14px}
+.btn.alt{background:#fff;color:var(--gruen-dk)}
+.btn:disabled{opacity:.4}
+.slider label{display:flex;justify-content:space-between;font-weight:600;font-size:16px;margin-bottom:2px}
+.slider output{color:var(--gruen-dk);font-variant-numeric:tabular-nums}
+input[type=range]{width:100%;height:44px;accent-color:var(--gruen-dk);margin:0}
+.readout{display:flex;justify-content:space-between;align-items:center;background:var(--gruen-hell);border-radius:14px;padding:10px 14px;font-size:16px}
+.readout strong{font-size:22px;font-variant-numeric:tabular-nums}
+.quiz{display:none;gap:10px;background:#fff8e6;border:2px solid #f2d68b;border-radius:16px;padding:12px}
+.quiz.on{display:grid}
+.quiz p{margin:0;font-size:16px}
+.found{padding:16px}
+.found h2{font-size:18px;margin:0 0 4px;display:flex;justify-content:space-between;align-items:baseline}
+.found h2 span{font-size:15px;color:var(--gruen-dk)}
+.found ol{list-style:none;margin:10px 0 0;padding:0;display:grid;gap:8px}
+.found li{border:2px dashed var(--line);border-radius:14px;padding:10px 12px 10px 46px;position:relative;font-size:16px;line-height:1.35;color:var(--muted);background:#fbfdfb}
+.found li::before{content:"?";position:absolute;left:10px;top:9px;width:26px;height:26px;border-radius:50%;background:#e8efe9;color:var(--muted);display:grid;place-items:center;font-weight:800;font-size:15px}
+.found li strong{display:block;color:var(--ink);font-size:16px}
+.found li.done{border:2px solid var(--gruen);background:var(--gruen-hell);color:var(--ink)}
+.found li.done::before{content:"\2713";background:var(--gruen);color:#fff}
+.found li.fresh{animation:pop .7s ease}
+@keyframes pop{0%{transform:scale(.96)}40%{transform:scale(1.03)}100%{transform:scale(1)}}
+.hint{font-size:15px;color:var(--muted);margin:0}
+@media (prefers-reduced-motion:reduce){.found li.fresh{animation:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Motor-Labor</h1>
+    <p>Dreh den Rotor mit dem Finger. Probiere alles aus und sammle deine Entdeckungen.</p>
+  </header>
+
+  <div class="grid">
+    <section>
+      <div class="card stage">
+        <svg id="stage" viewBox="0 0 640 520" role="img" aria-label="Gleichstrommotor mit Dauermagnet, drehbarem Rotor und Polwender">
+          <defs>
+            <marker id="pfeilFeld" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 Z" fill="#9db5a3"/></marker>
+            <marker id="pfeilKraft" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="15" markerHeight="15" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0 L10 5 L0 10 Z" fill="#e07b00"/></marker>
+          </defs>
+          <rect width="640" height="520" fill="#fbfefb"/>
+
+          <!-- Stator -->
+          <pattern id="wickelMuster" width="14" height="14" patternUnits="userSpaceOnUse"><path d="M7 0 V14" stroke="#b8762a" stroke-width="6" opacity=".5"/></pattern>
+          <path id="blockL" d="M40 80 H238 V175 A118 118 0 0 0 238 345 V440 H40 Z" fill="#fbd5d1" stroke="#b9413a" stroke-width="3" stroke-linejoin="round"/>
+          <path id="blockR" d="M600 80 H402 V175 A118 118 0 0 1 402 345 V440 H600 Z" fill="#c9eed4" stroke="#2c8a52" stroke-width="3" stroke-linejoin="round"/>
+          <g id="spulenMuster" display="none" pointer-events="none">
+            <path d="M40 80 H238 V175 A118 118 0 0 0 238 345 V440 H40 Z" fill="url(#wickelMuster)"/>
+            <path d="M600 80 H402 V175 A118 118 0 0 1 402 345 V440 H600 Z" fill="url(#wickelMuster)"/>
+          </g>
+          <circle id="ringL" cx="130" cy="256" r="54" fill="#fff" fill-opacity=".85" stroke="#3a4a42" stroke-width="4" display="none"/>
+          <circle id="ringR" cx="510" cy="256" r="54" fill="#fff" fill-opacity=".85" stroke="#3a4a42" stroke-width="4" display="none"/>
+          <text id="grossL" x="130" y="284" font-size="84" font-weight="800" text-anchor="middle" fill="#b9413a" opacity=".85">N</text>
+          <text id="grossR" x="510" y="284" font-size="84" font-weight="800" text-anchor="middle" fill="#2c8a52" opacity=".85">S</text>
+          <text id="capL" x="130" y="420" font-size="17" font-weight="700" text-anchor="middle" fill="#7a4743">Stator (Dauermagnet)</text>
+          <text id="capR" x="510" y="420" font-size="17" font-weight="700" text-anchor="middle" fill="#25663f">Stator (Dauermagnet)</text>
+
+          <!-- Magnetfeld -->
+          <g stroke="#b3c9b8" stroke-width="2" stroke-dasharray="7 7" fill="none" marker-end="url(#pfeilFeld)">
+            <line x1="216" y1="215" x2="424" y2="215"/>
+            <line x1="204" y1="260" x2="436" y2="260"/>
+            <line x1="216" y1="305" x2="424" y2="305"/>
+          </g>
+
+          <!-- Leitungen -->
+          <path id="drahtOben" d="M320 52 V222" stroke="#e8b4b0" stroke-width="7" fill="none" stroke-linecap="round"/>
+          <path id="drahtUnten" d="M320 298 V470" stroke="#b7c6ee" stroke-width="7" fill="none" stroke-linecap="round"/>
+          <path id="flussOben" d="M320 52 V222" stroke="#d83a3a" stroke-width="7" fill="none" stroke-linecap="round" stroke-dasharray="3 14" opacity="0"/>
+          <path id="flussUnten" d="M320 298 V470" stroke="#2f5fd0" stroke-width="7" fill="none" stroke-linecap="round" stroke-dasharray="3 14" opacity="0"/>
+          <circle cx="320" cy="48" r="11" fill="#d83a3a"/><text x="320" y="53" font-size="16" font-weight="800" fill="#fff" text-anchor="middle">+</text>
+          <circle cx="320" cy="474" r="11" fill="#2f5fd0"/><text x="320" y="479" font-size="16" font-weight="800" fill="#fff" text-anchor="middle">&#8722;</text>
+          <text x="340" y="52" font-size="15" font-weight="600" fill="#a52f2f">Pluspol</text>
+          <text x="340" y="478" font-size="15" font-weight="600" fill="#2347a6">Minuspol</text>
+
+          <!-- Schalter (antippbar) -->
+          <g id="schalter" style="cursor:pointer">
+            <rect x="268" y="82" width="104" height="66" fill="#fbfefb" opacity=".01"/>
+            <rect x="302" y="86" width="36" height="58" rx="10" fill="#fbfefb"/>
+            <circle cx="320" cy="94" r="6" fill="#5b6c63"/>
+            <circle cx="320" cy="136" r="6" fill="#5b6c63"/>
+            <line id="hebel" x1="320" y1="136" x2="346" y2="104" stroke="#2a3a32" stroke-width="7" stroke-linecap="round"/>
+            <text x="368" y="120" font-size="16" font-weight="700" fill="#2a3a32">Schalter</text>
+          </g>
+
+          <!-- Kraftpfeile -->
+          <line id="kraftA" x1="0" y1="0" x2="0" y2="0" stroke="#e07b00" stroke-width="5" stroke-linecap="round" marker-end="url(#pfeilKraft)" opacity="0"/>
+          <line id="kraftB" x1="0" y1="0" x2="0" y2="0" stroke="#e07b00" stroke-width="5" stroke-linecap="round" marker-end="url(#pfeilKraft)" opacity="0"/>
+
+          <!-- Rotor -->
+          <g id="rotor" transform="translate(320 260)">
+            <g id="rotorLehr">
+              <rect x="-92" y="-12" width="184" height="24" rx="6" fill="#8c9791"/>
+              <g id="wickel"></g>
+              <rect id="schuhA" x="88" y="-34" width="16" height="68" rx="6" fill="#b9c4bd" stroke="#3a4a42" stroke-width="2"/>
+              <rect id="schuhB" x="-104" y="-34" width="16" height="68" rx="6" fill="#b9c4bd" stroke="#3a4a42" stroke-width="2"/>
+            </g>
+            <g id="rotorStab" display="none" stroke="#3a4a42" stroke-width="2.5">
+              <path d="M0 -21 H92 a8 8 0 0 1 8 8 V13 a8 8 0 0 1 -8 8 H0 Z" fill="#e4574f"/>
+              <path d="M0 -21 H-92 a8 8 0 0 0 -8 8 V13 a8 8 0 0 0 8 8 H0 Z" fill="#4fb872"/>
+            </g>
+            <g id="kommutator">
+              <path d="M2 -27 A27 27 0 0 1 2 27 L2 14 A14 14 0 0 0 2 -14 Z" fill="#f0a30a" stroke="#9a6a05" stroke-width="2"/>
+              <path d="M-2 -27 A27 27 0 0 0 -2 27 L-2 14 A14 14 0 0 1 -2 -14 Z" fill="#f0a30a" stroke="#9a6a05" stroke-width="2"/>
+            </g>
+            <circle id="schleifring" r="21" fill="none" stroke="#8aa0b8" stroke-width="12" display="none"/>
+            <circle r="8" fill="#2f3d36"/>
+          </g>
+
+          <!-- Buersten -->
+          <rect x="305" y="220" width="30" height="14" rx="3" fill="#d83a3a" stroke="#7d1f1f" stroke-width="2"/>
+          <rect x="305" y="286" width="30" height="14" rx="3" fill="#2f5fd0" stroke="#17306f" stroke-width="2"/>
+
+          <!-- Bauteile-Beschriftung (zuschaltbar) -->
+          <g id="beschriftung" display="none" font-size="17" font-weight="700">
+            <g stroke="#2a3a32" stroke-width="2" stroke-dasharray="4 4" fill="none">
+              <line id="linieRotor" x1="190" y1="170" x2="320" y2="260"/>
+              <line x1="200" y1="350" x2="306" y2="262"/>
+              <line x1="450" y1="150" x2="336" y2="226"/>
+            </g>
+            <g>
+              <rect x="30" y="148" width="190" height="40" rx="20" fill="#fff" stroke="#2a3a32" stroke-width="2"/>
+              <text id="lblRotor" x="125" y="174" text-anchor="middle" fill="#2a3a32">Rotor (Spule)</text>
+              <rect x="30" y="328" width="190" height="40" rx="20" fill="#fff" stroke="#9a6a05" stroke-width="2"/>
+              <text id="kommLabel" x="125" y="354" text-anchor="middle" fill="#7a5204">Polwender</text>
+              <rect x="440" y="130" width="150" height="40" rx="20" fill="#fff" stroke="#7d1f1f" stroke-width="2"/>
+              <text x="515" y="156" text-anchor="middle" fill="#7d1f1f">Kohlebürste</text>
+            </g>
+          </g>
+
+          <!-- Polanzeige -->
+          <g id="polA"><circle r="15" fill="#fff" stroke="#3a4a42" stroke-width="3"/><text y="6" font-size="19" font-weight="800" text-anchor="middle" fill="#fff">N</text></g>
+          <g id="polB"><circle r="15" fill="#fff" stroke="#3a4a42" stroke-width="3"/><text y="6" font-size="19" font-weight="800" text-anchor="middle" fill="#fff">S</text></g>
+
+          <text id="tipp" x="320" y="506" font-size="17" font-weight="600" text-anchor="middle" fill="#5b6c63">Tipp: Dreh den Rotor mit dem Finger oder gib ihm einen Schubs.</text>
+        </svg>
+        <div class="status" aria-live="polite"><span class="dot" id="statusPunkt"></span><span id="statusText">&nbsp;</span></div>
+      </div>
+    </section>
+
+    <section style="display:grid;gap:16px">
+      <div class="card panel">
+        <div class="row">
+          <button class="tog" id="btnStrom" aria-pressed="true">Strom<small id="stromZustand">AN</small></button>
+          <button class="tog" id="btnPol" aria-pressed="true">Polwender<small id="polZustand">AN</small></button>
+        </div>
+        <div class="slider">
+          <label for="spannung">Spannung (Gashebel)<output id="uOut">4,5 V</output></label>
+          <input type="range" id="spannung" min="0" max="9" step="0.5" value="4.5">
+        </div>
+        <div class="readout"><span>Drehzahl</span><strong id="drehzahl">0,0</strong><span>Umdrehungen pro Sekunde</span></div>
+        <div class="row">
+          <button class="tog" id="btnSlow" aria-pressed="false">Zeitlupe<small id="slowZustand">AUS</small></button>
+          <button class="tog" id="btnQuiz" aria-pressed="false">Pole raten<small id="quizZustand">AUS</small></button>
+        </div>
+        <div class="row">
+          <button class="tog" id="btnLabels" aria-pressed="false">Bauteile zeigen<small id="labelsZustand">AUS</small></button>
+          <button class="tog" id="btnBau" aria-pressed="false">Bauweise<small id="bauZustand">Lehrbuch</small></button>
+        </div>
+
+        <div class="quiz" id="quizBox">
+          <p id="quizFrage"></p>
+          <div class="row">
+            <button class="btn" id="btnPruefen">Prüfen</button>
+            <button class="btn alt" id="btnNeu">Neue Stellung</button>
+          </div>
+          <p id="quizErgebnis" aria-live="polite"></p>
+        </div>
+
+        <button class="btn alt" id="btnReset">Motor zurücksetzen</button>
+      </div>
+
+      <div class="card found">
+        <h2>Meine Entdeckungen <span id="zaehler">0 von 5</span></h2>
+        <p class="hint">Jede Karte zeigt zuerst eine Aufgabe. Wenn du es herausgefunden hast, steht dein Merksatz da. Der kommt später in den Hefteintrag.</p>
+        <ol id="liste"></ol>
+      </div>
+    </section>
+  </div>
+</div>
+
+<script>
+// PHYSIK-START
+const PHYS = { luecke: 12 * Math.PI / 180, K: 4.06, c: 1.0, mu: 0.25 };
+
+// Polung des Rotors: +1 = Ende A ist Nordpol, -1 = Ende A ist Suedpol, 0 = Stromkreis offen.
+function polung(th, polwender) {
+  if (!polwender) return 1;
+  let d = th % Math.PI; if (d < 0) d += Math.PI;
+  d = Math.min(d, Math.PI - d);
+  if (d < PHYS.luecke) return 0;
+  return Math.sin(th) > 0 ? -1 : 1;
+}
+function strom(st) { return st.on && st.U > 0; }
+function drehmoment(st) {
+  if (!strom(st)) return 0;
+  return -PHYS.K * st.U * polung(st.th, st.pol) * Math.sin(st.th);
+}
+function schritt(st, dt) {
+  const tau = drehmoment(st);
+  const sg = Math.sign(st.w);
+  let a = tau - PHYS.c * st.w;
+  if (Math.abs(st.w) < 1e-4) {
+    if (Math.abs(a) <= PHYS.mu) { st.w = 0; return; }
+    a -= PHYS.mu * Math.sign(a);
+  } else {
+    a -= PHYS.mu * sg;
+  }
+  let wn = st.w + a * dt;
+  if (sg !== 0 && Math.sign(wn) !== sg && Math.abs(tau) <= PHYS.mu) wn = 0;
+  st.w = wn;
+  st.th += st.w * dt;
+  const zp = 2 * Math.PI;
+  st.th = ((st.th % zp) + zp) % zp;
+}
+// PHYSIK-ENDE
+
+// Schreibzugriffe nur bei echter Aenderung: sonst baut der Browser die Zeichnung in jedem Bild neu auf (ruckelt auf dem iPad).
+(function () {
+  const sa = Element.prototype.setAttribute;
+  Element.prototype.setAttribute = function (k, v) { v = String(v); if (this.getAttribute(k) === v) return; sa.call(this, k, v); };
+})();
+(function () {
+  const $ = id => document.getElementById(id);
+  const svg = $("stage");
+  const CX = 320, CY = 260, LP = 78;
+  const TWO_PI = 2 * Math.PI;
+  const wrap = a => ((a % TWO_PI) + TWO_PI) % TWO_PI;
+  const norm = d => ((d + Math.PI) % TWO_PI + TWO_PI) % TWO_PI - Math.PI;
+
+  const START_TH = 6 * Math.PI / 180; // Totlage wie beim echten Modell: erst anschubsen
+  const st = { th: START_TH, w: 0, U: 4.5, on: true, pol: true, slow: false, quiz: false, drag: false, labels: false, beruehrt: false, bau: "lehrbuch" };
+  document.addEventListener("pointerdown", () => { st.beruehrt = true; }, true);
+  const quiz = { th: 0, a: null, b: null, geprueft: false, serie: 0 };
+
+  // Wicklungen zeichnen
+  const wickel = $("wickel");
+  [1, -1].forEach(vz => {
+    const body = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+    body.setAttribute("x", vz > 0 ? 24 : -62); body.setAttribute("y", -25);
+    body.setAttribute("width", 38); body.setAttribute("height", 50); body.setAttribute("rx", 6);
+    body.setAttribute("fill", "#efd2a4"); wickel.appendChild(body);
+    for (let i = 0; i < 5; i++) {
+      const ln = document.createElementNS("http://www.w3.org/2000/svg", "line");
+      const x = vz * (30 + i * 7);
+      ln.setAttribute("x1", x); ln.setAttribute("x2", x); ln.setAttribute("y1", -26); ln.setAttribute("y2", 26);
+      ln.setAttribute("stroke", "#b8762a"); ln.setAttribute("stroke-width", 4); ln.setAttribute("stroke-linecap", "round");
+      wickel.appendChild(ln);
+    }
+  });
+
+  // Entdeckungen
+  const FUNDE = [
+    { id: "totlage", titel: "Totlage", frage: "Stelle den Rotor genau waagrecht hin und lass los. Was passiert?",
+      satz: "In der Totlage ist der Stromkreis unterbrochen. Der Rotor hat kein Magnetfeld und bleibt stehen, bis man ihn anschubst." },
+    { id: "ohne", titel: "Ohne Polwender", frage: "Schalte den Polwender aus und gib dem Rotor einen Schubs. Was beobachtest du?",
+      satz: "Ohne Polwechsel zieht der Stator den Rotor in eine feste Stellung. Dort bleibt er stehen, denn ungleiche Pole ziehen sich an.",
+      satzS: "Ohne Polwechsel ziehen die Spulen den Stabmagneten in eine feste Stellung. Dort bleibt er stehen, denn ungleiche Pole ziehen sich an." },
+    { id: "mit", titel: "Mit Polwender", frage: "Schalte den Polwender an und lass den Motor laufen. Wie lange dreht er sich?",
+      satz: "Der Polwender (Kommutator) kehrt die Stromrichtung nach einer halben Drehung um. Der Rotor wechselt seine Pole und wird weitergestoßen.",
+      satzS: "Der Polwender (Kommutator) kehrt die Stromrichtung in den Spulen nach einer halben Drehung um. Die Spulen wechseln ihre Pole und schieben den Stabmagneten weiter." },
+    { id: "gas", titel: "Gashebel", frage: "Fahre die Spannung hoch und runter, während der Motor läuft. Was ändert sich?",
+      satz: "Je größer die Spannung, desto stärker der Elektromagnet im Rotor und desto schneller dreht sich der Motor." },
+    { id: "pole", titel: "Pole bestimmt", frage: "Schalte auf Pole raten und bestimme dreimal hintereinander richtig die Pole am Rotor.",
+      frageS: "Schalte auf Pole raten und bestimme dreimal hintereinander richtig die Pole der Spulen.",
+      satz: "Kurz vor einem Stator-Pol ist der Rotor-Pol ungleichnamig und wird angezogen. Kurz danach schaltet der Polwender um: Der Rotor-Pol ist gleichnamig und wird abgestoßen.",
+      satzS: "Kurz bevor der Stabmagnet an einer Spule vorbeikommt, ist deren Pol ungleichnamig und zieht ihn an. Danach schaltet der Polwender um: Der Spulenpol ist gleichnamig und stößt ihn weiter." }
+  ];
+  const fund = {};
+  try { JSON.parse(localStorage.getItem("motorlabor-funde") || "[]").forEach(id => fund[id] = true); } catch (e) {}
+  const liste = $("liste");
+  const items = {};
+  FUNDE.forEach(f => {
+    const li = document.createElement("li");
+    liste.appendChild(li); items[f.id] = li;
+  });
+  function zeichneFunde(frisch) {
+    let n = 0;
+    FUNDE.forEach(f => {
+      const li = items[f.id];
+      const ok = !!fund[f.id];
+      if (ok) n++;
+      li.className = (ok ? "done" : "") + (frisch === f.id ? " fresh" : "");
+      const sch = st.bau === "schule";
+      li.innerHTML = ok ? "<strong>" + f.titel + "</strong>" + ((sch && f.satzS) || f.satz)
+                        : "<strong>Aufgabe: " + f.titel + "</strong>" + ((sch && f.frageS) || f.frage);
+    });
+    $("zaehler").textContent = n + " von " + FUNDE.length;
+  }
+  function entdecke(id) {
+    if (fund[id]) return;
+    fund[id] = true;
+    try { localStorage.setItem("motorlabor-funde", JSON.stringify(Object.keys(fund))); } catch (e) {}
+    zeichneFunde(id);
+  }
+  zeichneFunde();
+
+  // Beobachter fuer die Entdeckungen
+  const obs = { weg: 0, wegNied: 0, wegHoch: 0, maxW: 0, stillLuecke: 0 };
+  function beobachte(dt, dth) {
+    if (st.drag || st.quiz || !st.beruehrt) return;
+    const laeuft = strom(st) && Math.abs(st.w) > 1;
+    if (st.pol && laeuft) {
+      obs.weg += Math.abs(dth);
+      if (st.U <= 3.5) obs.wegNied += Math.abs(dth);
+      if (st.U >= 6.5) obs.wegHoch += Math.abs(dth);
+    } else if (!st.pol || !strom(st)) { obs.weg = 0; }
+    if (obs.weg >= 2 * TWO_PI) entdecke("mit");
+    if (obs.wegNied >= TWO_PI && obs.wegHoch >= TWO_PI) entdecke("gas");
+    obs.maxW = Math.max(obs.maxW, Math.abs(st.w));
+    if (Math.abs(st.w) < 0.02) {
+      if (strom(st) && st.pol && polung(st.th, true) === 0) {
+        obs.stillLuecke += dt;
+        if (obs.stillLuecke > 0.6) entdecke("totlage");
+      }
+      if (strom(st) && !st.pol && obs.maxW > 2) entdecke("ohne");
+      obs.maxW = 0;
+    } else { obs.stillLuecke = 0; }
+  }
+
+  // Zeichnen
+  function setTxt(el, v) { if (el.textContent !== v) el.textContent = v; }
+  const polBilder = { A: $("polA"), B: $("polB") };
+  function setPol(g, farbe, text, ring) {
+    g.querySelector("circle").setAttribute("fill", farbe);
+    g.querySelector("circle").setAttribute("stroke", ring || "#3a4a42");
+    setTxt(g.querySelector("text"), text);
+    g.querySelector("text").setAttribute("fill", farbe === "#fff" ? "#3a4a42" : "#fff");
+  }
+  const COL = { N: "#e4574f", S: "#4fb872" };
+  function pfeil(el, th, tau) {
+    const len = Math.min(44, Math.abs(tau) * 2.4);
+    if (st.quiz || len < 8) { el.setAttribute("opacity", "0"); return; }
+    const R = 112;
+    const px = CX + R * Math.cos(th), py = CY - R * Math.sin(th);
+    const tx = -Math.sin(th) * Math.sign(tau), ty = -Math.cos(th) * Math.sign(tau);
+    el.setAttribute("x1", px); el.setAttribute("y1", py);
+    el.setAttribute("x2", px + tx * len); el.setAttribute("y2", py + ty * len);
+    el.setAttribute("opacity", ".9");
+  }
+  let flussOff = 0;
+  function statusText() {
+    const sch = st.bau === "schule";
+    if (st.quiz) return ["warn", sch ? "Pole raten: Der Stabmagnet steht still, die Pole der Spulen sind versteckt." : "Pole raten: Der Rotor steht still, die Pole sind versteckt."];
+    if (!st.on) return ["bad", sch ? "<b>Schalter aus:</b> Kein Strom, die Spulen sind keine Magnete." : "<b>Schalter aus:</b> Kein Strom, der Rotor ist kein Magnet."];
+    if (st.U <= 0) return ["bad", "<b>Spannung 0 V:</b> Kein Strom, nichts treibt den Motor an."];
+    if (polung(st.th, st.pol) === 0) return ["warn", "<b>Totlage:</b> Die Bürsten liegen auf der Lücke. Der Stromkreis ist unterbrochen."];
+    if (st.pol) return ["ok", "<b>Strom fließt.</b> Der Polwender schaltet die Pole " + (sch ? "der Spulen" : "des Rotors") + " automatisch um."];
+    return ["ok", "<b>Strom fließt.</b> Ohne Polwechsel behalten " + (sch ? "die Spulen ihre Pole." : "der Rotor seine Pole.")];
+  }
+  function render(dt) {
+    const th = st.quiz ? quiz.th : st.th;
+    $("rotor").setAttribute("transform", "translate(" + CX + " " + CY + ") rotate(" + (-th * 180 / Math.PI) + ")");
+    const s = st.quiz ? polung(th, st.pol) : (strom(st) ? polung(th, st.pol) : 0);
+    const ax = CX + LP * Math.cos(th), ay = CY - LP * Math.sin(th);
+    polBilder.A.setAttribute("transform", "translate(" + ax + " " + ay + ")");
+    polBilder.B.setAttribute("transform", "translate(" + (2 * CX - ax) + " " + (2 * CY - ay) + ")");
+    const schule = st.bau === "schule";
+    const f = g => g === "N" ? COL.N : g === "S" ? COL.S : "#fff";
+    const erwA = s > 0 ? "N" : "S", erwB = s > 0 ? "S" : "N";
+    const ringFarbe = (guess, erw) => quiz.geprueft ? (guess === erw ? "#1e9e4d" : "#d83a3a") : "#3a4a42";
+    $("rotorLehr").setAttribute("display", schule ? "none" : "");
+    $("rotorStab").setAttribute("display", schule ? "" : "none");
+    $("spulenMuster").setAttribute("display", schule ? "" : "none");
+    setTxt($("capL"), schule ? "Spule 1 (Stator)" : "Stator (Dauermagnet)");
+    setTxt($("capR"), schule ? "Spule 2 (Stator)" : "Stator (Dauermagnet)");
+    setTxt($("lblRotor"), schule ? "Rotor (Stabmagnet)" : "Rotor (Spule)");
+    polBilder.A.style.opacity = polBilder.B.style.opacity = "1";
+    $("ringL").setAttribute("display", schule && st.quiz ? "" : "none");
+    $("ringR").setAttribute("display", schule && st.quiz ? "" : "none");
+    if (schule) {
+      // Stabmagnet: Pole fest. Die Spulen wechseln ihre Pole mit dem Polwender.
+      setPol(polBilder.A, COL.N, "N"); setPol(polBilder.B, COL.S, "S");
+      let l = null, r = null;
+      if (st.quiz) { l = quiz.a; r = quiz.b; } else if (s !== 0) { l = erwA; r = erwB; }
+      const stil = (blk, gross, ring, g, erw) => {
+        blk.setAttribute("fill", g === "N" ? "#fbd5d1" : g === "S" ? "#c9eed4" : st.quiz ? "#eef2ee" : "#e9eeea");
+        blk.setAttribute("stroke", g === "N" ? "#b9413a" : g === "S" ? "#2c8a52" : "#8a9a90");
+        setTxt(gross, g || (st.quiz ? "?" : ""));
+        gross.setAttribute("fill", g === "N" ? "#b9413a" : g === "S" ? "#2c8a52" : "#6b7a72");
+        gross.setAttribute("opacity", g || st.quiz ? ".9" : "0");
+        if (st.quiz) ring.setAttribute("stroke", ringFarbe(g, erw));
+      };
+      stil($("blockL"), $("grossL"), $("ringL"), l, erwA);
+      stil($("blockR"), $("grossR"), $("ringR"), r, erwB);
+    } else {
+      $("blockL").setAttribute("fill", "#fbd5d1"); $("blockL").setAttribute("stroke", "#b9413a");
+      $("blockR").setAttribute("fill", "#c9eed4"); $("blockR").setAttribute("stroke", "#2c8a52");
+      setTxt($("grossL"), "N"); setTxt($("grossR"), "S");
+      $("grossL").setAttribute("fill", "#b9413a"); $("grossR").setAttribute("fill", "#2c8a52");
+      $("grossL").setAttribute("opacity", ".85"); $("grossR").setAttribute("opacity", ".85");
+      if (st.quiz) {
+        setPol(polBilder.A, f(quiz.a), quiz.a || "?", ringFarbe(quiz.a, erwA));
+        setPol(polBilder.B, f(quiz.b), quiz.b || "?", ringFarbe(quiz.b, erwB));
+        $("schuhA").setAttribute("fill", "#b9c4bd"); $("schuhB").setAttribute("fill", "#b9c4bd");
+      } else if (s === 0) {
+        setPol(polBilder.A, "#fff", "", "#9aa8a0"); setPol(polBilder.B, "#fff", "", "#9aa8a0");
+        polBilder.A.style.opacity = polBilder.B.style.opacity = ".7";
+        $("schuhA").setAttribute("fill", "#b9c4bd"); $("schuhB").setAttribute("fill", "#b9c4bd");
+      } else {
+        setPol(polBilder.A, COL[erwA], erwA); setPol(polBilder.B, COL[erwB], erwB);
+        $("schuhA").setAttribute("fill", COL[erwA]); $("schuhB").setAttribute("fill", COL[erwB]);
+      }
+    }
+    $("kommutator").setAttribute("display", st.pol ? "" : "none");
+    $("schleifring").setAttribute("display", st.pol ? "none" : "");
+    setTxt($("kommLabel"), st.pol ? "Polwender" : "Schleifring");
+    $("beschriftung").setAttribute("display", st.labels ? "" : "none");
+    $("linieRotor").setAttribute("x2", 2 * CX - ax); $("linieRotor").setAttribute("y2", 2 * CY - ay);
+    $("hebel").setAttribute("x2", st.on ? 320 : 346); $("hebel").setAttribute("y2", st.on ? 96 : 104);
+    const tau = st.quiz ? 0 : drehmoment(st);
+    pfeil($("kraftA"), th, tau); pfeil($("kraftB"), th + Math.PI, tau);
+    const fliesst = strom(st) && !st.quiz && s !== 0;
+    flussOff -= dt * 70;
+    ["flussOben", "flussUnten"].forEach(id => {
+      const e = $(id); e.setAttribute("opacity", fliesst ? "1" : "0"); e.setAttribute("stroke-dashoffset", flussOff);
+    });
+    const [kl, tx] = statusText();
+    $("statusPunkt").className = "dot " + kl; if ($("statusText").dataset.t !== tx) { $("statusText").dataset.t = tx; $("statusText").innerHTML = tx; }
+    setTxt($("drehzahl"), (Math.abs(st.quiz ? 0 : st.w) / TWO_PI).toFixed(1).replace(".", ","));
+  }
+
+  // Schleife
+  let last = performance.now();
+  function frame(ts) {
+    const dt = Math.min(0.033, (ts - last) / 1000); last = ts;
+    if (!st.drag && !st.quiz) {
+      const eff = dt * (st.slow ? 0.15 : 1);
+      const n = Math.max(1, Math.ceil(eff / (1 / 240)));
+      const h = eff / n;
+      const th0 = st.th;
+      for (let i = 0; i < n; i++) schritt(st, h);
+      beobachte(dt, norm(st.th - th0));
+    }
+    render(dt);
+    requestAnimationFrame(frame);
+  }
+
+  // Ziehen mit dem Finger
+  function toSvg(e) {
+    const p = svg.createSVGPoint(); p.x = e.clientX; p.y = e.clientY;
+    return p.matrixTransform(svg.getScreenCTM().inverse());
+  }
+  let hist = [], offset = 0;
+  svg.addEventListener("pointerdown", e => {
+    const p = toSvg(e);
+    if (st.quiz) {
+      const schule = st.bau === "schule";
+      const hit = (cx, cy) => Math.hypot(p.x - cx, p.y - cy) < (schule ? 62 : 30);
+      const ax = schule ? 130 : CX + LP * Math.cos(quiz.th), ay = schule ? 256 : CY - LP * Math.sin(quiz.th);
+      const bx = schule ? 510 : 2 * CX - ax, by = schule ? 256 : 2 * CY - ay;
+      const cyc = v => v === null ? "N" : v === "N" ? "S" : null;
+      if (hit(ax, ay)) { quiz.a = cyc(quiz.a); quiz.geprueft = false; $("quizErgebnis").textContent = ""; }
+      else if (hit(bx, by)) { quiz.b = cyc(quiz.b); quiz.geprueft = false; $("quizErgebnis").textContent = ""; }
+      return;
+    }
+    if (e.target.closest && e.target.closest("#schalter")) { setStrom(!st.on); return; }
+    const dx = p.x - CX, dy = CY - p.y;
+    if (Math.hypot(dx, dy) > 135) return;
+    svg.setPointerCapture(e.pointerId);
+    st.drag = true; st.w = 0;
+    offset = st.th - Math.atan2(dy, dx);
+    hist = [{ t: performance.now(), a: st.th }];
+    $("tipp").setAttribute("opacity", "0");
+    e.preventDefault();
+  });
+  svg.addEventListener("pointermove", e => {
+    if (!st.drag) return;
+    const p = toSvg(e);
+    st.th = wrap(Math.atan2(CY - p.y, p.x - CX) + offset);
+    const t = performance.now();
+    hist.push({ t, a: st.th });
+    while (hist.length > 2 && t - hist[0].t > 120) hist.shift();
+  });
+  function loslassen() {
+    if (!st.drag) return;
+    st.drag = false;
+    const t = performance.now(), f = hist[0], l = hist[hist.length - 1];
+    let w = 0;
+    if (hist.length > 1 && t - l.t < 80 && l.t > f.t) w = norm(l.a - f.a) / ((l.t - f.t) / 1000);
+    if (st.slow) w *= 0.15;
+    st.w = Math.max(-26, Math.min(26, w));
+    if (Math.abs(st.w) < 0.3) st.w = 0;
+  }
+  svg.addEventListener("pointerup", loslassen);
+  svg.addEventListener("pointercancel", loslassen);
+
+  // Bedienung
+  function setStrom(v) {
+    st.on = v; $("btnStrom").setAttribute("aria-pressed", String(v)); $("stromZustand").textContent = v ? "AN" : "AUS";
+  }
+  function setPolwender(v) {
+    st.pol = v; $("btnPol").setAttribute("aria-pressed", String(v)); $("polZustand").textContent = v ? "AN" : "AUS";
+  }
+  function neueStellung() {
+    let t;
+    do { t = Math.random() * TWO_PI; } while (polung(t, true) === 0 || Math.abs(Math.sin(t)) < 0.25 || Math.abs(Math.cos(t)) < 0.15);
+    quiz.th = t; quiz.a = quiz.b = null; quiz.geprueft = false; $("quizErgebnis").textContent = "";
+  }
+  function setQuiz(v) {
+    st.quiz = v; $("btnQuiz").setAttribute("aria-pressed", String(v)); $("quizZustand").textContent = v ? "AN" : "AUS";
+    $("quizBox").classList.toggle("on", v);
+    if (v) { if (!st.on) setStrom(true); if (st.U <= 0) { st.U = 4.5; $("spannung").value = 4.5; $("uOut").textContent = "4,5 V"; } neueStellung(); quiz.serie = 0; }
+  }
+  $("btnStrom").addEventListener("click", () => setStrom(!st.on));
+  $("btnPol").addEventListener("click", () => setPolwender(!st.pol));
+  $("btnSlow").addEventListener("click", () => {
+    st.slow = !st.slow; $("btnSlow").setAttribute("aria-pressed", String(st.slow)); $("slowZustand").textContent = st.slow ? "AN" : "AUS";
+  });
+  function quizText() {
+    $("quizFrage").innerHTML = st.bau === "schule"
+      ? "<b>Welche Pole haben die Spulen jetzt?</b> Tippe auf die Buchstaben in den Spulen: <b>?</b>, dann <b>N</b>, dann <b>S</b>."
+      : "<b>Welche Pole hat der Rotor jetzt?</b> Tippe auf die Kreise am Rotor: <b>?</b>, dann <b>N</b>, dann <b>S</b>.";
+  }
+  function setBau(schule) {
+    st.bau = schule ? "schule" : "lehrbuch";
+    $("btnBau").setAttribute("aria-pressed", String(schule)); $("bauZustand").textContent = schule ? "Schulmodell" : "Lehrbuch";
+    quizText(); zeichneFunde();
+    if (st.quiz) neueStellung();
+  }
+  $("btnBau").addEventListener("click", () => setBau(st.bau !== "schule"));
+  quizText();
+  $("btnQuiz").addEventListener("click", () => setQuiz(!st.quiz));
+  $("btnLabels").addEventListener("click", () => {
+    st.labels = !st.labels; $("btnLabels").setAttribute("aria-pressed", String(st.labels)); $("labelsZustand").textContent = st.labels ? "AN" : "AUS";
+  });
+  $("spannung").addEventListener("input", e => {
+    st.U = parseFloat(e.target.value); $("uOut").textContent = String(st.U).replace(".", ",") + " V";
+  });
+  $("btnNeu").addEventListener("click", neueStellung);
+  $("btnPruefen").addEventListener("click", () => {
+    const s = polung(quiz.th, st.pol);
+    const okA = quiz.a === (s > 0 ? "N" : "S"), okB = quiz.b === (s > 0 ? "S" : "N");
+    quiz.geprueft = true;
+    if (okA && okB) {
+      quiz.serie++;
+      $("quizErgebnis").textContent = "Richtig! (" + quiz.serie + " in Folge)";
+      if (quiz.serie >= 3) entdecke("pole");
+    } else {
+      quiz.serie = 0;
+      $("quizErgebnis").textContent = quiz.a && quiz.b
+        ? "Nicht ganz. Überlege: Was zieht den Magneten in die Drehrichtung?"
+        : "Tippe zuerst beide Kreise an: N oder S.";
+    }
+  });
+  $("btnReset").addEventListener("click", () => {
+    st.th = START_TH; st.w = 0; st.U = 4.5; st.slow = false;
+    $("spannung").value = 4.5; $("uOut").textContent = "4,5 V";
+    $("btnSlow").setAttribute("aria-pressed", "false"); $("slowZustand").textContent = "AUS";
+    setStrom(true); setPolwender(true); setQuiz(false); setBau(false);
+  });
+
+  requestAnimationFrame(frame);
+  window.__motor = { st, quiz };
+})();
+</script>
+</body>
+</html>

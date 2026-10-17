@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Elektromotor: Wie funktioniert der Elektroroller von Turhan?</title>
+<meta name="description" content="NuT in Klasse 7: Wie funktioniert ein Elektromotor? Ablauf, Simulator, Hefteintrag und Lösungen auf einer Seite.">
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<style>
+  :root { --ink:#1d2b24; --muted:#5b6c63; --line:#cfe0d3; --bg:#f1f8f0; --paper:#fff; --gruen:#58b36f; --orange:#f0a30a; --blau:#4a90d9; }
+  * { box-sizing:border-box; }
+  html { scroll-behavior:smooth; }
+  body { margin:0; background:var(--bg); color:var(--ink); font-family:Verdana, Arial, Helvetica, sans-serif; line-height:1.65; font-size:17px; -webkit-text-size-adjust:100%; }
+  .wrap { max-width:1040px; margin:0 auto; padding:0 20px; }
+  .head { padding:34px 0 22px; display:grid; grid-template-columns:1fr minmax(0,360px); gap:26px; align-items:center; }
+  .chip { display:inline-block; font-size:12px; font-weight:bold; letter-spacing:.08em; text-transform:uppercase; border:2px solid #2c7a46; color:#2c7a46; border-radius:999px; padding:3px 14px; background:#fff; }
+  h1 { font-family:"Arial Black","Helvetica Neue",Arial,sans-serif; font-weight:900; font-size:clamp(32px,6.2vw,56px); line-height:1.04; margin:16px 0 10px; letter-spacing:-0.02em; }
+  .lead { max-width:600px; color:var(--muted); margin:0; }
+  .head img { width:100%; height:auto; display:block; }
+  .tabbar { position:sticky; top:0; z-index:20; background:linear-gradient(var(--bg) 70%, rgba(241,248,240,0)); padding-top:10px; }
+  .tabs { display:flex; gap:6px; align-items:flex-end; margin-bottom:-2px; position:relative; z-index:2; }
+  .tab { font:inherit; font-weight:bold; font-size:16px; cursor:pointer; color:var(--ink); border:2px solid var(--ink); border-radius:16px 16px 0 0; background:var(--tint); padding:13px 22px 11px; min-height:52px; position:relative; transition:transform .15s ease; }
+  .tab:hover { transform:translateY(-3px); }
+  .tab[aria-selected=true] { background:var(--paper); border-bottom-color:var(--paper); padding-top:17px; }
+  .tab[aria-selected=true]::before { content:""; position:absolute; left:14px; right:14px; top:6px; height:5px; border-radius:3px; background:var(--c); }
+  .tab:focus-visible, .btn:focus-visible, .mchip:focus-visible, .filter:focus-visible, .ulink:focus-visible { outline:3px solid var(--c, var(--ink)); outline-offset:3px; }
+  .t1 { --c:var(--gruen);  --tint:#dff2e1; }
+  .t2 { --c:var(--orange); --tint:#fdebc8; }
+  .t3 { --c:var(--blau);   --tint:#dbe9f8; }
+  .t4 { --c:var(--ink);    --tint:#e4eae6; }
+  .panel { background:var(--paper); border:2px solid var(--ink); border-radius:0 22px 22px 22px; padding:34px 30px 38px; margin-bottom:46px; min-height:340px; }
+  .panel[hidden] { display:none; }
+  .panel h2 { font-family:"Arial Black","Helvetica Neue",Arial,sans-serif; font-size:28px; line-height:1.15; margin:0 0 6px; }
+  .panel .intro { color:var(--muted); margin:0 0 24px; max-width:640px; }
+  .phasen { list-style:none; margin:0; padding:0; display:grid; gap:14px; }
+  .phase { display:grid; grid-template-columns:124px 1fr; gap:20px; border:2px solid var(--ink); border-radius:18px; padding:18px 22px; }
+  .zeit { white-space:nowrap; font-family:"Arial Black",Arial,sans-serif; font-size:20px; line-height:1.1; color:#2c7a46; }
+  .zeit small { display:block; font-family:Verdana,Arial,sans-serif; font-weight:normal; font-size:13px; color:var(--muted); margin-top:3px; }
+  .phase h3 { margin:0 0 4px; font-size:19px; }
+  .phase p { margin:0; }
+  .kern { font-size:11px; font-weight:bold; letter-spacing:.06em; text-transform:uppercase; background:var(--gruen); color:#fff; border-radius:999px; padding:2px 10px; margin-left:8px; vertical-align:2px; }
+  .kern.zus { background:#fff; color:var(--muted); border:1.5px solid var(--muted); padding:0 9px; }
+  .brauchst { margin-top:12px; display:flex; flex-wrap:wrap; gap:8px; align-items:center; font-size:14px; }
+  .brauchst > span { color:var(--muted); }
+  .mchip { display:inline-block; text-decoration:none; color:var(--ink); font-weight:bold; font-size:14px; border:2px solid var(--ink); border-radius:999px; padding:7px 14px; min-height:40px; background:var(--paper); }
+  .mchip:hover { background:var(--ink); color:#fff; }
+  .filters { display:flex; flex-wrap:wrap; gap:8px; margin:0 0 22px; }
+  .filter { font:inherit; font-size:15px; font-weight:bold; cursor:pointer; border:2px solid var(--ink); background:var(--paper); border-radius:999px; padding:8px 18px; min-height:44px; }
+  .filter[aria-pressed=true] { background:var(--ink); color:#fff; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:22px; }
+  .card { border:2px solid var(--ink); border-radius:18px; overflow:hidden; background:var(--paper); display:flex; flex-direction:column; transition:transform .15s ease, box-shadow .15s ease; }
+  .card:hover { transform:translate(-3px,-3px); box-shadow:6px 6px 0 var(--c); }
+  .card[hidden] { display:none; }
+  .thumb { background:#eef5ee; border-bottom:2px solid var(--ink); aspect-ratio:4/3; display:flex; align-items:center; justify-content:center; padding:14px; overflow:hidden; }
+  .thumb img { max-width:100%; max-height:100%; display:block; border:1px solid var(--line); box-shadow:0 2px 8px rgba(0,0,0,.15); background:#fff; }
+  .card .body { padding:16px 18px 18px; display:flex; flex-direction:column; gap:4px; flex:1; }
+  .badge { align-self:flex-start; font-size:12px; font-weight:bold; color:#fff; background:var(--c); border-radius:999px; padding:2px 12px; }
+  .card h3 { margin:6px 0 0; font-size:19px; }
+  .card p { margin:0; font-size:15px; color:var(--muted); line-height:1.5; }
+  .card p.druck { color:var(--ink); font-weight:bold; font-size:14px; margin-top:6px; }
+  .btns { display:flex; gap:10px; margin-top:auto; padding-top:14px; flex-wrap:wrap; }
+  .btn { text-decoration:none; font-weight:bold; font-size:15px; color:#fff; background:var(--ink); border:2px solid var(--ink); border-radius:12px; padding:10px 18px; min-height:46px; display:inline-flex; align-items:center; }
+  .btn.ghost { background:var(--paper); color:var(--ink); }
+  .btn:hover { transform:translateY(-2px); }
+  .uwrap { display:grid; grid-template-columns:minmax(0,260px) 1fr; gap:28px; align-items:start; }
+  .uwrap .qr { border:2px solid var(--ink); border-radius:18px; padding:14px; text-align:center; background:#fff; }
+  .uwrap .qr img { width:100%; height:auto; display:block; }
+  .uwrap .qr span { display:block; font-size:13px; color:var(--muted); margin-top:6px; word-break:break-all; }
+  .auftraege { list-style:none; margin:0 0 22px; padding:0; display:grid; gap:10px; counter-reset:a; }
+  .auftraege li { counter-increment:a; border:2px solid var(--ink); border-radius:16px; padding:12px 16px 12px 58px; position:relative; background:#f3f9f4; }
+  .auftraege li::before { content:counter(a); position:absolute; left:14px; top:12px; width:32px; height:32px; border-radius:50%; background:var(--ink); color:#fff; display:grid; place-items:center; font-weight:bold; }
+  .auftraege b { display:block; }
+  .hinweise { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:18px; margin-top:28px; }
+  .hint { border:2px solid var(--ink); border-radius:18px; padding:18px 22px; }
+  .hint h3 { margin:0 0 6px; font-size:17px; }
+  .hint ul { margin:0; padding-left:20px; }
+  .hint li { margin-bottom:6px; }
+  footer { color:var(--muted); font-size:13px; padding:0 0 46px; max-width:760px; }
+  @media (max-width:760px) {
+    body { font-size:16px; }
+    .head { grid-template-columns:1fr; }
+    .head img { max-width:360px; }
+    .tab { padding:12px 10px 10px; font-size:14px; flex:1; }
+    .panel { padding:24px 18px 30px; border-radius:0 18px 18px 18px; }
+    .phase { grid-template-columns:1fr; gap:6px; }
+    .uwrap { grid-template-columns:1fr; }
+  }
+  @media (prefers-reduced-motion:reduce) {
+    html { scroll-behavior:auto; }
+    .tab, .card, .btn { transition:none; }
+    .tab:hover, .btn:hover, .card:hover { transform:none; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="head">
+    <div>
+      <span class="chip">NuT &middot; Klasse 7 &middot; 45 Minuten</span>
+      <h1>Wie funktioniert der Elektroroller von Turhan?</h1>
+      <p class="lead">Am iPad den Motor drehen, schalten und ausprobieren, bis klar ist, warum er nicht stehen bleibt. Ablauf, Simulator, Hefteintrag und Lösungen liegen auf dieser einen Seite.</p>
+    </div>
+    <img src="roller.png" alt="Elektroroller mit Motor im Hinterrad">
+  </header>
+
+  <div class="tabbar">
+    <div class="tabs" role="tablist" aria-label="Bereiche">
+      <button class="tab t1" role="tab" id="tab-ablauf" aria-controls="ablauf" aria-selected="true">Ablauf</button>
+      <button class="tab t2" role="tab" id="tab-material" aria-controls="material" aria-selected="false">Material</button>
+      <button class="tab t3" role="tab" id="tab-uebung" aria-controls="uebung" aria-selected="false">Üben</button>
+      <button class="tab t4" role="tab" id="tab-lehrkraft" aria-controls="lehrkraft" aria-selected="false">Lehrkraft</button>
+    </div>
+  </div>
+
+  <section class="panel" id="ablauf" role="tabpanel" aria-labelledby="tab-ablauf">
+    <h2>Der Ablauf in 45 Minuten</h2>
+    <p class="intro">Von oben nach unten durchgehen. Bei jeder Phase steht, was du brauchst. Die Phase mit "Zusatz" kannst du bei Zeitnot weglassen.</p>
+    <ol class="phasen">
+        <li class="phase">
+          <div class="zeit">0 bis 5<small>Min.</small></div>
+          <div><h3>Das Rätsel <span class="kern">Kern</span></h3><p>Rollerbild zeigen: Im Hinterrad steckt ein Elektromotor. Wie wird aus Strom eine Drehung? Jeder schreibt oder skizziert eine Vermutung ins Heft.</p><div class="brauchst"><span>Du brauchst jetzt:</span><a class="mchip" href="roller.png" target="_blank" rel="noopener">Rollerbild</a></div></div>
+        </li>
+        <li class="phase">
+          <div class="zeit">5 bis 12<small>Min.</small></div>
+          <div><h3>Dein Modell <span class="kern">Kern</span></h3><p>Vorhersage: Was passiert beim Einschalten? Es passiert nichts, erst nach dem Anschubsen läuft das Modell. Warum?</p></div>
+        </li>
+        <li class="phase">
+          <div class="zeit">12 bis 27<small>Min.</small></div>
+          <div><h3>Forschen am iPad <span class="kern">Kern</span></h3><p>Zu zweit im Motor-Labor. Fünf Entdeckungen sammeln. Mit &quot;Bauweise&quot; zwischen Schulmodell und Lehrbuch wechseln.</p><div class="brauchst"><span>Du brauchst jetzt:</span><a class="mchip" href="simulator/" target="_blank" rel="noopener">Motor-Labor öffnen</a><a class="mchip" href="#uebung">QR-Code (Reiter Üben)</a></div></div>
+        </li>
+        <li class="phase">
+          <div class="zeit">27 bis 32<small>Min.</small></div>
+          <div><h3>Hinge-Frage <span class="kern">Kern</span></h3><p>A bis D zeigen lassen, dann auflösen. Bei Unklarheit eine falsche Antwort im Simulator widerlegen.</p><div class="brauchst"><span>Du brauchst jetzt:</span><a class="mchip" href="material/hinge-frage.html" target="_blank" rel="noopener">Hinge-Frage</a></div></div>
+        </li>
+        <li class="phase">
+          <div class="zeit">32 bis 35<small>Min.</small></div>
+          <div><h3>Maus-Beitrag <span class="kern zus">Zusatz</span></h3><p>Kurzer Ausschnitt zum Vergleich mit dem eigenen Ergebnis. Entfällt bei Zeitnot.</p><div class="brauchst"><span>Du brauchst jetzt:</span><a class="mchip" href="https://www.youtube.com/watch?v=dMaSh5DLK14" target="_blank" rel="noopener">Beitrag zum Elektromotor (YouTube)</a></div></div>
+        </li>
+        <li class="phase">
+          <div class="zeit">35 bis 43<small>Min.</small></div>
+          <div><h3>Hefteintrag <span class="kern">Kern</span></h3><p>Lückentext am iPad ausfüllen, mit Prüfen kontrollieren, als PDF sichern und in OneNote einfügen.</p><div class="brauchst"><span>Du brauchst jetzt:</span><a class="mchip" href="material/lueckentext.html" target="_blank" rel="noopener">Hefteintrag zum Ausfüllen</a><a class="mchip" href="material/lueckentext-leer.pdf" target="_blank" rel="noopener">Hefteintrag leer (PDF)</a></div></div>
+        </li>
+        <li class="phase">
+          <div class="zeit">43 bis 45<small>Min.</small></div>
+          <div><h3>Zurück zum Roller <span class="kern">Kern</span></h3><p>Der Gashebel ist die Spannung. Die Rätselfrage vom Anfang in einem Satz beantworten.</p></div>
+        </li>
+    </ol>
+  </section>
+
+  <section class="panel" id="material" role="tabpanel" aria-labelledby="tab-material" hidden>
+    <h2>Material</h2>
+    <p class="intro">Alles, was in der Stunde gebraucht wird. Interaktives öffnest du mit "Öffnen", Blätter siehst du mit "Ansehen" oder speicherst sie mit "PDF laden".</p>
+    <div class="filters" role="group" aria-label="Filter">
+      <button class="filter" aria-pressed="true" data-filter="alle">Alles</button>
+      <button class="filter" aria-pressed="false" data-filter="Digital">Digital</button>
+      <button class="filter" aria-pressed="false" data-filter="Hefteintrag">Hefteintrag</button>
+      <button class="filter" aria-pressed="false" data-filter="Lehrkraft">Lehrkraft</button>
+    </div>
+    <div class="grid" id="cards">
+      <article class="card" data-gruppe="Digital" style="--c:#58b36f">
+        <div class="thumb"><img src="material/vorschau/simulator.jpg" alt="Vorschau Motor-Labor (Simulator)" loading="lazy"></div>
+        <div class="body">
+          <span class="badge">Interaktiv, iPad</span>
+          <h3>Motor-Labor (Simulator)</h3>
+          <p>Rotor drehen, Polwender schalten, Pole raten, Entdeckungen sammeln</p>
+          <p class="druck">Zu zweit, Querformat</p>
+          <div class="btns"><a class="btn" href="simulator/" target="_blank" rel="noopener">Öffnen</a></div>
+        </div>
+      </article>
+      <article class="card" data-gruppe="Digital" style="--c:#58b36f">
+        <div class="thumb"><img src="material/vorschau/hinge-frage.jpg" alt="Vorschau Hinge-Frage" loading="lazy"></div>
+        <div class="body">
+          <span class="badge">Interaktiv, Beamer</span>
+          <h3>Hinge-Frage</h3>
+          <p>Eine Diagnosefrage mit vier Antworten, jede Falschantwort zeigt eine typische Fehlvorstellung</p>
+          <p class="druck">Zeigen lassen: A bis D</p>
+          <div class="btns"><a class="btn" href="material/hinge-frage.html" target="_blank" rel="noopener">Öffnen</a></div>
+        </div>
+      </article>
+      <article class="card" data-gruppe="Hefteintrag" style="--c:#f0a30a">
+        <div class="thumb"><img src="material/vorschau/lueckentext.jpg" alt="Vorschau Hefteintrag zum Ausfüllen" loading="lazy"></div>
+        <div class="body">
+          <span class="badge">Interaktiv, iPad</span>
+          <h3>Hefteintrag zum Ausfüllen</h3>
+          <p>Bauteile beschriften, drei Zustände, Merksatz. Antippen, prüfen, als PDF sichern</p>
+          <p class="druck">Danach PDF in OneNote</p>
+          <div class="btns"><a class="btn" href="material/lueckentext.html" target="_blank" rel="noopener">Öffnen</a></div>
+        </div>
+      </article>
+      <article class="card" data-gruppe="Hefteintrag" style="--c:#f0a30a">
+        <div class="thumb"><img src="material/vorschau/lueckentext-leer.jpg" alt="Vorschau Hefteintrag leer als PDF" loading="lazy"></div>
+        <div class="body">
+          <span class="badge">PDF, A4, 2 Seiten</span>
+          <h3>Hefteintrag leer als PDF</h3>
+          <p>Zum Einfügen in OneNote und Beschriften mit dem Apple Pencil</p>
+          <p class="druck">Ausdruck einfügen</p>
+          <div class="btns"><a class="btn" href="material/lueckentext-leer.pdf" target="_blank" rel="noopener">Ansehen</a><a class="btn ghost" href="material/lueckentext-leer.pdf" download>PDF laden</a></div>
+        </div>
+      </article>
+      <article class="card" data-gruppe="Lehrkraft" style="--c:#4a90d9">
+        <div class="thumb"><img src="material/vorschau/lueckentext-loesung.jpg" alt="Vorschau Hefteintrag mit Lösung" loading="lazy"></div>
+        <div class="body">
+          <span class="badge">PDF, A4, 2 Seiten</span>
+          <h3>Hefteintrag mit Lösung</h3>
+          <p>Alle Lücken ausgefüllt, zum Vergleichen</p>
+          <p class="druck">Für die Lehrkraft</p>
+          <div class="btns"><a class="btn" href="material/lueckentext-loesung.pdf" target="_blank" rel="noopener">Ansehen</a><a class="btn ghost" href="material/lueckentext-loesung.pdf" download>PDF laden</a></div>
+        </div>
+      </article>
+      <article class="card" data-gruppe="Lehrkraft" style="--c:#4a90d9">
+        <div class="thumb"><img src="material/vorschau/lehrerseite.jpg" alt="Vorschau Lehrerseite" loading="lazy"></div>
+        <div class="body">
+          <span class="badge">PDF, A4</span>
+          <h3>Lehrerseite</h3>
+          <p>Verlauf, Vorbereitung, Fachwissen, Hinge-Auswertung, Lösungen</p>
+          <p class="druck">Für die Lehrkraft</p>
+          <div class="btns"><a class="btn" href="material/lehrerseite.html" target="_blank" rel="noopener">Ansehen</a><a class="btn ghost" href="material/lehrerseite.pdf" download>PDF laden</a></div>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <section class="panel" id="uebung" role="tabpanel" aria-labelledby="tab-uebung" hidden>
+    <h2>Üben am iPad</h2>
+    <p class="intro">Die Kinder scannen den QR-Code und öffnen das Motor-Labor. Es läuft im Browser, ohne Anmeldung. Querformat ist am besten.</p>
+    <div class="uwrap">
+      <div class="qr"><img src="qr-simulator.png" alt="QR-Code zum Motor-Labor"><span>fhe86.github.io/elektromotor/simulator</span></div>
+      <div>
+        <ol class="auftraege"><li><b>Totlage</b>Stelle den Rotor genau waagrecht hin und lass los. Was passiert?</li><li><b>Ohne Polwender</b>Schalte den Polwender aus und gib dem Rotor einen Schubs. Was beobachtest du?</li><li><b>Mit Polwender</b>Schalte den Polwender an und lass den Motor laufen. Wie lange dreht er sich?</li><li><b>Gashebel</b>Fahre die Spannung hoch und runter. Was ändert sich?</li><li><b>Pole bestimmt</b>Schalte auf Pole raten und bestimme dreimal hintereinander richtig die Pole.</li></ol>
+        <p style="margin:0"><a class="btn" href="simulator/" target="_blank" rel="noopener">Motor-Labor öffnen</a>
+        <a class="btn ghost" href="material/lueckentext.html" target="_blank" rel="noopener">Hefteintrag öffnen</a></p>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel" id="lehrkraft" role="tabpanel" aria-labelledby="tab-lehrkraft" hidden>
+    <h2>Für dich als Lehrkraft</h2>
+    <p class="intro">Verlauf, Fachwissen, Hinge-Auswertung und Lösungen stehen auf der Lehrerseite. Hier das Wichtigste vorab.</p>
+    <p style="margin:0 0 22px"><a class="btn" href="material/lehrerseite.html" target="_blank" rel="noopener">Lehrerseite öffnen</a>
+    <a class="btn ghost" href="material/lueckentext-loesung.pdf" target="_blank" rel="noopener">Lösung Hefteintrag</a></p>
+    <div class="hinweise">
+      <div class="hint"><h3>Vorbereitung</h3><ul>
+        <li>Dein Modell mit zwei Spulen, Stabmagnet und Polwender testen. Es läuft nur nach dem Anschubsen.</li>
+        <li>Optional ein Zeitlupenvideo vom Polwender filmen, falls das Modell ausfällt.</li>
+        <li>PDF-Weg am iPad vorab testen (Teilen, Drucken, Vorschau aufziehen, In Dateien sichern).</li>
+        <li>Maus-Beitrag vorher ansehen und den Ausschnitt wählen.</li>
+      </ul></div>
+      <div class="hint"><h3>Wichtig fachlich</h3><ul>
+        <li>In der Totlage ist der Stromkreis unterbrochen. Der Schwung trägt den Rotor über die Stelle.</li>
+        <li>Dein Modell dreht den Magneten, im Lehrbuch dreht die Spule. Der Simulator zeigt beides.</li>
+        <li>Der Simulator ist vereinfacht, die Zahlen sind nicht die eines echten Motors.</li>
+      </ul></div>
+      <div class="hint"><h3>Zeit knapp?</h3><ul>
+        <li>Maus-Beitrag weglassen.</li>
+        <li>Im Simulator nur die Entdeckungen 1 bis 3.</li>
+        <li>Lückentext teilweise als Hausaufgabe.</li>
+      </ul></div>
+    </div>
+  </section>
+
+  <footer>Alle Grafiken sind neu erstellt. Turhan ist eine erfundene Figur. Das Rollerbild wurde mit KI erzeugt.</footer>
+</div>
+<script>
+(function () {
+  var tabs = Array.prototype.slice.call(document.querySelectorAll('.tab'));
+  var ids = ['ablauf', 'material', 'uebung', 'lehrkraft'];
+  function show(id, push) {
+    if (ids.indexOf(id) === -1) { id = 'ablauf'; }
+    tabs.forEach(function (t) { t.setAttribute('aria-selected', String(t.id === 'tab-' + id)); });
+    ids.forEach(function (i) { document.getElementById(i).hidden = (i !== id); });
+    if (push) { try { history.replaceState(null, '', '#' + id); } catch (e) { /* ohne Adresszeile weiter */ } }
+  }
+  tabs.forEach(function (t, idx) {
+    t.addEventListener('click', function () { show(t.id.replace('tab-', ''), true); });
+    t.addEventListener('keydown', function (e) {
+      var next = null;
+      if (e.key === 'ArrowRight') { next = tabs[(idx + 1) % tabs.length]; }
+      if (e.key === 'ArrowLeft') { next = tabs[(idx + tabs.length - 1) % tabs.length]; }
+      if (next) { next.focus(); show(next.id.replace('tab-', ''), true); e.preventDefault(); }
+    });
+  });
+  document.addEventListener('click', function (e) {
+    var l = e.target.closest && e.target.closest('a[href^="#"]');
+    if (l) { var id = l.getAttribute('href').slice(1); if (ids.indexOf(id) !== -1) { show(id, true); window.scrollTo(0, 0); e.preventDefault(); } }
+  });
+  show(location.hash.replace('#', ''), false);
+  window.addEventListener('hashchange', function () { show(location.hash.replace('#', ''), false); });
+  var filters = document.querySelectorAll('.filter'), cards = document.querySelectorAll('#cards .card');
+  filters.forEach(function (f) {
+    f.addEventListener('click', function () {
+      filters.forEach(function (o) { o.setAttribute('aria-pressed', String(o === f)); });
+      var w = f.getAttribute('data-filter');
+      cards.forEach(function (c) { c.hidden = !(w === 'alle' || c.getAttribute('data-gruppe') === w); });
+    });
+  });
+})();
+</script>
+</body>
+</html>
