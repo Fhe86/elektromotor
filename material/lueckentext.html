@@ -24,9 +24,13 @@ h1{font-size:27px;line-height:1.15;margin:2px 0 0}
 #ergebnis{font-weight:bold;font-size:16px}
 details.hilfe{font-size:14px;color:var(--muted);margin:0 0 10px}
 details.hilfe summary{cursor:pointer;min-height:32px}
-details.hilfe .schritte{margin:8px 0 4px;padding-left:0;list-style:none;counter-reset:s;display:grid;gap:8px;color:var(--ink);font-size:15px;line-height:1.45}
-details.hilfe .schritte li{counter-increment:s;position:relative;padding-left:38px}
-details.hilfe .schritte li::before{content:counter(s);position:absolute;left:0;top:-1px;width:26px;height:26px;border-radius:50%;background:var(--ink);color:#fff;display:grid;place-items:center;font-weight:bold;font-size:14px}
+.onenote{display:grid;grid-template-columns:56px 1fr;gap:16px;align-items:start;border:2.5px solid #7b3fb0;border-radius:16px;background:#f7f1fc;padding:14px 18px;margin:0 0 14px}
+.onenote .onlogo{width:56px;height:56px}
+.onenote h2{margin:0 0 2px;font-size:18px;color:#5b2a86}
+.onenote .kurz{margin:0 0 8px;font-size:14px;color:var(--muted)}
+.onenote .schritte{margin:0;padding:0;list-style:none;counter-reset:s;display:grid;gap:6px;font-size:15px;line-height:1.4}
+.onenote .schritte li{counter-increment:s;position:relative;padding-left:32px}
+.onenote .schritte li::before{content:counter(s);position:absolute;left:0;top:0;width:24px;height:24px;border-radius:50%;background:#7b3fb0;color:#fff;display:grid;place-items:center;font-weight:bold;font-size:13px}
 .aufgabe{background:var(--paper);border:2px solid var(--ink);border-radius:16px;padding:14px 18px 16px;margin:0 0 16px}
 #a1,#a3{break-inside:avoid;page-break-inside:avoid}
 .zeile,.bank{break-inside:avoid;page-break-inside:avoid}
@@ -60,12 +64,12 @@ details.hilfe .schritte li::before{content:counter(s);position:absolute;left:0;t
 .sol .linien div{border-bottom-color:#dfe9e1}
 body.sol .luecke{color:var(--blau)}
 body.sol .luecke::before{content:attr(data-ans)}
-body.sol .toolbar, body.sol .bank, body.sol details.hilfe{display:none}
+body.sol .toolbar, body.sol .bank, body.sol details.hilfe, body.sol .onenote{display:none}
 @page{size:A4;margin:11mm 13mm}
 @media print{
   body{background:#fff;font-size:11.5pt;line-height:1.4}
   .sheet{max-width:none;padding:0}
-  .toolbar, details.hilfe{display:none !important}
+  .toolbar, details.hilfe, .onenote{display:none !important}
   .aufgabe{border-width:1.5px;margin:0 0 4mm;padding:3mm 4mm 3.5mm}
   .zeile p, .merk p{line-height:2.1}
   .luecke{background:none !important;border-bottom-color:#1d2b24 !important}
@@ -103,17 +107,19 @@ body.sol .toolbar, body.sol .bank, body.sol details.hilfe{display:none}
   <details class="hilfe"><summary>So füllst du aus und sicherst das PDF</summary>
     <p>Tippe ein Wort im Wortspeicher an, es leuchtet orange. Dann tippe auf die Lücke, in die es gehört. Tippst du eine ausgefüllte Lücke an, wird sie wieder leer. Mit "Prüfen" siehst du, was stimmt (grün) und was nicht (rot).</p>
   </details>
-  <details class="hilfe" open><summary>So kommt dein fertiger Hefteintrag als PDF in OneNote</summary>
-    <ol class="schritte">
-      <li>Fülle alles aus und tippe auf <b>Prüfen</b>, bis alles grün ist.</li>
-      <li>Tippe auf <b>Als PDF sichern</b>. Die Druckvorschau öffnet sich.</li>
-      <li>Ziehe die Seite in der Vorschau mit <b>zwei Fingern auseinander</b>. Jetzt ist es ein PDF.</li>
-      <li>Tippe auf <b>Teilen</b> und dann auf <b>In Dateien sichern</b>. Speichere es auf dem iPad.</li>
-      <li>Öffne <b>OneNote</b> und geh auf die Seite in deinem Heft, auf die der Hefteintrag soll.</li>
-      <li>Tippe auf <b>Einfügen</b>, dann auf <b>Datei</b> und such dein PDF aus.</li>
-      <li>Wähle <b>Ausdruck einfügen</b>. Die Seiten stehen untereinander auf deiner OneNote-Seite.</li>
-    </ol>
-  </details>
+  <aside class="onenote" aria-label="Anleitung OneNote">
+    <svg class="onlogo" viewBox="0 0 48 48" aria-hidden="true"><rect x="6" y="4" width="36" height="40" rx="6" fill="#7b3fb0"/><rect x="6" y="4" width="12" height="40" rx="6" fill="#5b2a86"/><text x="30" y="33" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-weight="bold" font-size="22" fill="#fff">N</text></svg>
+    <div>
+      <h2>In OneNote einfügen</h2>
+      <p class="kurz">Dein fertiger Hefteintrag kommt als PDF in dein Heft. So geht's:</p>
+      <ol class="schritte">
+        <li>Tippe auf <b>Als PDF sichern</b>, zieh die Vorschau mit <b>zwei Fingern</b> auf.</li>
+        <li><b>Teilen</b>, dann <b>In Dateien sichern</b>.</li>
+        <li>In OneNote: <b>Einfügen</b>, <b>Datei</b>, dein PDF wählen.</li>
+        <li>Tippe auf <b>Ausdruck einfügen</b>. Fertig.</li>
+      </ol>
+    </div>
+  </aside>
 
   <section class="aufgabe" id="a1">
     <h2><b>1</b>Bauteile benennen</h2>
